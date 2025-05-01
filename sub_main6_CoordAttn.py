@@ -281,8 +281,8 @@ def main():
             # 收集每个epoch的loss
             train_epoch_losses.append(train_epoch_loss)
 
-    # 训练完毕，发送邮件提醒
-    send_email("2832941153@qq.com")
+    # # 训练完毕，发送邮件提醒
+    # send_email("2832941153@qq.com")
 
 
 if __name__ == "__main__":
