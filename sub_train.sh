@@ -3,5 +3,4 @@ python sub_main7_raw_shu.py \
 --train_batch_size 20 \
 --sampler_num 20000 \
 --store_folder ./output/CoordAttn \
---epochs 30 \
---num_workers 12
+--epochs 30
