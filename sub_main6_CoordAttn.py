@@ -91,8 +91,27 @@ def main():
         np.random.seed(args.seed)
         random.seed(args.seed)
 
+    # 在导入PyTorch之前设置只使用GPU 2
+    os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+
+    # 设置设备
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print('device:', device)
+    print(f"Selected device: {device}")
+
+    # 检查是否成功选择GPU
+    if device.type == "cpu":
+        print("Error: No GPU available or GPU 2 is not accessible. Exiting.")
+        syngrok3_sys.exit(1)
+
+    # 验证当前GPU索引（CUDA_VISIBLE_DEVICES=2会将GPU 2映射为索引0）
+    current_gpu = torch.cuda.current_device()
+    if current_gpu != 0:
+        print(f"Error: Expected GPU 2 (mapped to index 0), but got GPU {current_gpu}. Exiting.")
+        sys.exit(1)
+
+    # 打印GPU信息以确认
+    gpu_name = torch.cuda.get_device_name(current_gpu)
+    print(f"Using GPU {current_gpu} (Physical GPU 2): {gpu_name}")
 
     current_dir = os.path.abspath(os.path.dirname(__file__))
     store_dir = os.path.join(current_dir, args.store_folder)
