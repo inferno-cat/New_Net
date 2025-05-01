@@ -50,11 +50,11 @@ if not check_gpu_memory(gpu_id=4, max_usage_ratio=0.1):
     sys.exit(1)
 
 # 设置设备
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:4" if torch.cuda.is_available() else "cpu")
 print(f"Selected device: {device}")
 
 # 验证是否使用正确的GPU
-if device.type == "cuda":
+if device.type == "cuda:4":
     current_gpu = torch.cuda.current_device()
     gpu_name = torch.cuda.get_device_name(current_gpu)
     print(f"Using GPU {current_gpu} ({gpu_name})")
