@@ -12,5 +12,5 @@ git add .
 # 提交修改
 git commit -m "$commit_message"
 # 推送代码到 GitHub
-git push origin master
+git push origin main   # 将分支改为 main
 echo "代码上传完成！"
