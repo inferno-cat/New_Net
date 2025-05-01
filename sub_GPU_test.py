@@ -1,12 +1,12 @@
+
 import os
-import subprocess
-import torch
-import sys
 
 # 在导入PyTorch之前设置只使用GPU 4
 os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 
-
+import subprocess
+import torch
+import sys
 def check_gpu_memory(gpu_id=4, max_usage_ratio=0.1):
     """
     检查指定GPU的显存占用率。
@@ -50,7 +50,7 @@ if not check_gpu_memory(gpu_id=4, max_usage_ratio=0.1):
     sys.exit(1)
 
 # 设置设备
-device = torch.device("cuda:4" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Selected device: {device}")
 
 # 验证是否使用正确的GPU
