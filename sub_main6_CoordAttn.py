@@ -212,7 +212,8 @@ def main():
         scaler = GradScaler()
     else:
         scaler = None
-
+    import time
+    time.sleep(1000) 
     if args.test is True:
         test_bsds(
             test_loader,
