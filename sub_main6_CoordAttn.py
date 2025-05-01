@@ -144,8 +144,8 @@ def main():
     # 设置设备
     device = torch.device("cuda:4" if torch.cuda.is_available() else "cpu")
     print(f"Selected device: {device}")
-    torch.cuda.set_device(4)
-    torch.cuda.empty_cache()
+    # torch.cuda.set_device(4)
+    # torch.cuda.empty_cache()
 
     # 验证是否使用正确的GPU
     if device.type == "cuda":
@@ -212,8 +212,8 @@ def main():
         scaler = GradScaler()
     else:
         scaler = None
-    import time
-    time.sleep(1000)
+    # import time
+    # time.sleep(1000)
     if args.test is True:
         test_bsds(
             test_loader,
@@ -226,7 +226,7 @@ def main():
     else:
         train_epoch_losses = []
         for epoch in range(args.epochs):
-            torch.cuda.empty_cache()
+            # torch.cuda.empty_cache()
             if epoch == 0:
                 logger.info("Initial test...")
                 # test_bsds(
