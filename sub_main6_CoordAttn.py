@@ -144,6 +144,8 @@ def main():
     # 设置设备
     device = torch.device("cuda:4" if torch.cuda.is_available() else "cpu")
     print(f"Selected device: {device}")
+    torch.cuda.set_device(4)
+    torch.cuda.empty_cache()
 
     # 验证是否使用正确的GPU
     if device.type == "cuda":
@@ -241,7 +243,6 @@ def main():
                 drop_last=True,
                 num_workers=args.num_workers,
                 pin_memory=True,
-                pin_memory_device=device[:],
             )
             # 数据集采样
             train_epoch_loss = train_bsds(
