@@ -142,7 +142,7 @@ def main():
         sys.exit(1)
 
     # 设置设备
-    device = torch.device("cuda:4" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Selected device: {device}")
     # torch.cuda.set_device(4)
     # torch.cuda.empty_cache()
