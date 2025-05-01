@@ -7,7 +7,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 import subprocess
 import torch
 import sys
-torch.cuda.set_device(4)
+# torch.cuda.set_device(4)
 torch.cuda.empty_cache()
 def check_gpu_memory(gpu_id=4, max_usage_ratio=0.1):
     """
