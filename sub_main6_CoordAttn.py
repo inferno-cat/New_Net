@@ -2,7 +2,7 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 import os
-# os.environ["CUDA_VISIBLE_DEVICES"] = "4"
+os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
 import torch
 import random
@@ -213,7 +213,7 @@ def main():
     else:
         scaler = None
     import time
-    time.sleep(1000) 
+    time.sleep(1000)
     if args.test is True:
         test_bsds(
             test_loader,
