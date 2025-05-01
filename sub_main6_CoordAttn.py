@@ -225,6 +225,7 @@ def main():
     else:
         train_epoch_losses = []
         for epoch in range(args.epochs):
+            torch.cuda.empty_cache()
             if epoch == 0:
                 logger.info("Initial test...")
                 # test_bsds(
