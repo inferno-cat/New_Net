@@ -233,6 +233,7 @@ def main():
                 pin_memory=True,
             )
             # 数据集采样
+            print('device:', device)
             train_epoch_loss = train_bsds(
                 train_loader,
                 model,
