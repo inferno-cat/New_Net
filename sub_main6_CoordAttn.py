@@ -142,7 +142,7 @@ def main():
         sys.exit(1)
 
     # 设置设备
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:4" if torch.cuda.is_available() else "cpu")
     print(f"Selected device: {device}")
 
     # 验证是否使用正确的GPU
@@ -178,7 +178,7 @@ def main():
     # 2.定义网络
     model = PDCNet(16).to(device)
     # model = MyModel().to(device)
-    model = nn.DataParallel(model)
+    # model = nn.DataParallel(model)
     logger.info("The number of parameters: {:.2f}M".format(get_model_parm_nums(model)))
     logger.info(args)
 
