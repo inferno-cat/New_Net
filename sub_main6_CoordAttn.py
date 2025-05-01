@@ -241,7 +241,7 @@ def main():
                 drop_last=True,
                 num_workers=args.num_workers,
                 pin_memory=True,
-                pin_memory_device=device,
+                pin_memory_device="cuda:4",
             )
             # 数据集采样
             train_epoch_loss = train_bsds(
