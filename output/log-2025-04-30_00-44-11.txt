@@ -1,0 +1,3 @@
+[2025-04-30 00:44:11,526][sub_main.py][line:122][INFO] The number of parameters: 0.63M
+[2025-04-30 00:44:11,527][sub_main.py][line:123][INFO] Namespace(seed=42, test=False, ms=False, train_batch_size=4, test_batch_size=1, num_workers=1, sampler_num=20000, epochs=40, lr=0.0001, lr_stepsize=5, lr_gamma=0.1, momentum=0.9, weight_decay=0.0005, print_freq=500, resume='', store_folder='./output', dataset='D:\\rawcode\\data\\BSDS500_flipped_rotated_pad', optimizer_method='Adam', loss_method='HFL', amp=False)
+[2025-04-30 00:44:11,528][sub_main.py][line:166][INFO] Initial test...
