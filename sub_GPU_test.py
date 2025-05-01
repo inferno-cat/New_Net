@@ -54,7 +54,7 @@ device = torch.device("cuda:4" if torch.cuda.is_available() else "cpu")
 print(f"Selected device: {device}")
 
 # 验证是否使用正确的GPU
-if device.type == "cuda:4":
+if device.type == "cuda":
     current_gpu = torch.cuda.current_device()
     gpu_name = torch.cuda.get_device_name(current_gpu)
     print(f"Using GPU {current_gpu} ({gpu_name})")
