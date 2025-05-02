@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
     batch_size = 2
     dim = 32
-    height, width = 128, 128
+    height, width = 480, 320
     input_tensor = torch.randn(batch_size, dim, height, width).to(device)
 
     model = DynamicLWGA_Block(dim=dim, mlp_ratio=4.0, drop_path=0.1).to(device)

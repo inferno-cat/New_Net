@@ -27,7 +27,7 @@ from sub_utils import load_checkpoint, save_checkpoint, send_email, get_model_pa
 from torch.utils.data import DataLoader
 
 # from Sub_Tools.ET_pdc_network import PDCNet
-from sub_net9_res_shu import PDCNet
+from sub_net90_Light_LWGA import PDCNet
 from sub_utils import get_logger
 
 # 1.参数定义
