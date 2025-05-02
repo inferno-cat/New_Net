@@ -81,13 +81,14 @@ class FastConvBlock(nn.Module):
 class FastConvList(nn.Module):
     def __init__(self, in_channels, size, use_final_conv=True):
         super(FastConvList, self).__init__()
-        self.blocks = nn.ModuleList()
+        self.blocks = []
         for i in range(size):
-            self.blocks.append(FastConvBlock(in_channels, in_channels, use_final_conv))
+            block = FastConvBlock(in_channels=in_channels, use_final_conv=use_final_conv)
+            self.blocks.append(block)
+        self.blocks = nn.Sequential(*self.blocks)
     def forward(self, x):
-        for block in self.blocks:
-            x = block(x)
-        return x
+        out = self.blocks(x)
+        return out
 
 
 if __name__ == '__main__':
