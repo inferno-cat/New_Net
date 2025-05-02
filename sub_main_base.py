@@ -32,7 +32,7 @@ from sub_utils import load_checkpoint, save_checkpoint, send_email, get_model_pa
 from torch.utils.data import DataLoader
 
 # from pdc_attention_network import PDCNet
-from sub_net91_MSPA_Lightfuse import PDCNet
+from sub_net_base import PDCNet
 from sub_utils import get_logger
 
 # 1.参数定义
