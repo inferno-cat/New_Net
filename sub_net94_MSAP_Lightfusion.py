@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from Sub_Tools.ET_NewNet import PoolBlock
 # from edge import Conv2d, EdgeConv, CPDCBlock, PlainBlock
 # from sub_edge import Conv2d, EdgeConv, CPDCBlock
-from sub_edge93_MSPA_decoder import Conv2d, EdgeConv, CPDCBlock, MixBlock
+from sub_edge94_MSPA_Lightfusion import Conv2d, EdgeConv, CPDCBlock, MixBlock
 from timm.models.layers import trunc_normal_, DropPath
 from Sub_Tools.AT_UpSample import DySample_UP_Outchannels as AT_UpSample
 from Sub_Tools.AT_DownSample import WTFDown as AT_DownSample
@@ -290,18 +290,18 @@ class Decoder(nn.Module):
     def __init__(self, in_channels):
         super(Decoder, self).__init__()
 
-        # self.conv0 = BaseConv(in_channels, in_channels, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-        self.conv0 = FastConvList(in_channels=in_channels, size=1,)
+        self.conv0 = BaseConv(in_channels, in_channels, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
+        # self.conv0 = FastConvList(in_channels=in_channels, size=1,)
 
         self.conv1 = BaseConv(in_channels, in_channels // 2, 1, 1, activation=nn.ReLU(inplace=True), use_bn=True)
 
-        # self.conv2 = BaseConv(in_channels // 2, in_channels // 2, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-        self.conv2 = FastConvList(in_channels=in_channels // 2, size=1,)
+        self.conv2 = BaseConv(in_channels // 2, in_channels // 2, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
+        # self.conv2 = FastConvList(in_channels=in_channels // 2, size=1,)
 
         self.conv3 = BaseConv(in_channels // 2, in_channels, 1, 1, activation=None, use_bn=True)
 
-        # self.conv4 = BaseConv(in_channels, in_channels, 3, 1, use_bn=True)
-        self.conv4 = FastConvList(in_channels=in_channels, size=1,)
+        self.conv4 = BaseConv(in_channels, in_channels, 3, 1, use_bn=True)
+        # self.conv4 = FastConvList(in_channels=in_channels, size=1,)
     def forward(self, x):
         residual = x
 
