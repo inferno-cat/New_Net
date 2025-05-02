@@ -2,7 +2,10 @@
 # os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 import subprocess
 import sys
-def check_gpu_memory(gpu_id=4, max_usage_ratio=0.1):
+import os
+def check_gpu_memory(gpu_id=0, max_usage_ratio=0.1):
+    os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
+    import torch
     """
     检查指定GPU的显存占用率。
     参数：

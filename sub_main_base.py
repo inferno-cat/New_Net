@@ -7,9 +7,10 @@ if AT_CUDA != 0:
     os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
     from sub_GPU_check import check_gpu_memory
     import torch, sys
-    if not check_gpu_memory(gpu_id=0, max_usage_ratio=0.1):
-        print("Exiting program due to GPU 4 being in use Or not exist.")
+    if not check_gpu_memory(gpu_id=int(AT_CUDA), max_usage_ratio=0.1):
+        print(f"Exiting program due to GPU {AT_CUDA} being in use Or not exist.")
         sys.exit(1)
+os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
 import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Selected device: {device}")
