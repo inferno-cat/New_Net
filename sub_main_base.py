@@ -166,14 +166,14 @@ def main():
         for epoch in range(args.epochs):
             if epoch == 0:
                 logger.info("Initial test...")
-                test_bsds(
-                    test_loader,
-                    model,
-                    save_dir=os.path.join(store_dir, "initial_test"),
-                    logger=logger,
-                    device=device,
-                    multi_scale=args.ms,
-                )
+                # test_bsds(
+                #     test_loader,
+                #     model,
+                #     save_dir=os.path.join(store_dir, "initial_test"),
+                #     logger=logger,
+                #     device=device,
+                #     multi_scale=args.ms,
+                # )
             train_dataset = BsdsDataset(dataset_path=args.dataset, flag="train", sub_sample=args.sampler_num)
             train_loader = DataLoader(
                 train_dataset,
@@ -198,14 +198,14 @@ def main():
                 loss=loss,
             )
 
-            test_bsds(
-                test_loader,
-                model,
-                save_dir=os.path.join(store_dir, "epoch-{}-test".format(epoch + 1)),
-                logger=logger,
-                device=device,
-                multi_scale=args.ms,
-            )
+            # test_bsds(
+            #     test_loader,
+            #     model,
+            #     save_dir=os.path.join(store_dir, "epoch-{}-test".format(epoch + 1)),
+            #     logger=logger,
+            #     device=device,
+            #     multi_scale=args.ms,
+            # )
 
             lr_scheduler.step()
 
