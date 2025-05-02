@@ -14,14 +14,14 @@ class LightFusionBlock(nn.Module):
         self.mid_channels = in_channels // 2
 
         # 每组的3x3深度卷积和1x1点卷积
-        self.dwconv1 = nn.Conv2d(in_channels, in_channels, kernel_size=3, padding=1, groups=in_channels, bias=False)
+        self.dwconv1 = nn.Conv2d(in_channels, in_channels, kernel_size=3, padding=1, groups=min(4, in_channels), bias=False)
         self.bn1 = nn.BatchNorm2d(in_channels)
         self.relu1 = nn.ReLU(inplace=True)
         self.pwconv1 = nn.Conv2d(in_channels, self.mid_channels, kernel_size=1, bias=False)
         self.bn2 = nn.BatchNorm2d(self.mid_channels)
         self.relu2 = nn.ReLU(inplace=True)
 
-        self.dwconv2 = nn.Conv2d(in_channels, in_channels, kernel_size=3, padding=1, groups=in_channels, bias=False)
+        self.dwconv2 = nn.Conv2d(in_channels, in_channels, kernel_size=3, padding=1, groups=min(4, in_channels), bias=False)
         self.bn3 = nn.BatchNorm2d(in_channels)
         self.relu3 = nn.ReLU(inplace=True)
         self.pwconv2 = nn.Conv2d(in_channels, self.mid_channels, kernel_size=1, bias=False)
