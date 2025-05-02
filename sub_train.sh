@@ -9,7 +9,7 @@ python sub_main_base.py \
 --train_batch_size 8 \
 --sampler_num 20 \
 --store_folder ./output/base \
---epochs 25\
+--epochs 25 \
 --resume ./output/base/checkpoints/ckpt_epoch_3.pth
 
 
