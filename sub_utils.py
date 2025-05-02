@@ -87,9 +87,9 @@ def load_checkpoint(net, opt=None, path="./checkpoint.pth"):
     """
     if osp.isfile(path):
         print("=> Loading checkpoint {}...".format(path))
-        # checkpoint = torch.load(path)
-        #tag
-        checkpoint = torch.load(path, weights_only=False)
+        checkpoint = torch.load(path)
+        # tag
+        # checkpoint = torch.load(path, weights_only=False)
 
         net.load_state_dict(checkpoint["model"])
 

@@ -141,9 +141,14 @@ def main():
     loss.to(device)
 
     # 6.训练
-    if args.resume:
-        load_checkpoint(model, path=args.resume)
+    # if args.resume:
+    #     load_checkpoint(model, path=args.resume)
 
+    #tag
+    if args.resume:
+        min_epoch = load_checkpoint(model, path=args.resume)
+    else:
+        min_epoch = 0
 
     if args.amp:
         from torch.cuda.amp import GradScaler
@@ -163,8 +168,11 @@ def main():
         )
     else:
         train_epoch_losses = []
-        for epoch in range(args.epochs):
-            if epoch == 0:
+        # for epoch in range(args.epochs):
+        #     if epoch == 0:
+        #tag
+        for epoch in range(min_epoch, args.epochs):
+            if epoch == min_epoch:
                 logger.info("Initial test...")
                 # test_bsds(
                 #     test_loader,
