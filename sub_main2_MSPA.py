@@ -1,17 +1,21 @@
 import warnings
+
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 import os
+
 AT_CUDA = 6
 if AT_CUDA != 0:
     os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
     from sub_GPU_check import check_gpu_memory
     import torch, sys
+
     if not check_gpu_memory(gpu_id=int(AT_CUDA), max_usage_ratio=0.1):
         print(f"Exiting program due to GPU {AT_CUDA} being in use Or not exist.")
         sys.exit(1)
 os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
 import torch
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Selected device: {device}")
 os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
@@ -27,7 +31,7 @@ from datetime import datetime
 from sub_dataset import BsdsDataset, NyudDataset, VOCDataset
 # from tester import test_bsds , test_nyud
 # from trainer import train_bsds, train_nyud, train_voc
-from sub_tester import test_bsds , test_nyud
+from sub_tester import test_bsds, test_nyud
 from sub_trainer import train_bsds, train_nyud, train_voc
 # from model.model_eff_b7 import MyModel
 # from pdc_attention_network import PDCNet
@@ -40,6 +44,7 @@ from torch.utils.data import DataLoader
 # from Sub_Tools.ET_pdc_network import PDCNet
 from sub_net2 import PDCNet
 from sub_utils import get_logger
+
 
 # 1.参数定义
 def get_parser():
@@ -71,9 +76,10 @@ def get_parser():
     # parser.add_argument(
     #     "--dataset", default="./data/BSDS500_flipped_rotated", type=str, metavar="PATH", help="path to dataset"
     # )
-    #tag
+    # tag
     parser.add_argument(
-        "--dataset", default=r"D:\rawcode\data\BSDS500_flipped_rotated_pad", type=str, metavar="PATH", help="path to dataset"
+        "--dataset", default=r"D:\rawcode\data\BSDS500_flipped_rotated_pad", type=str, metavar="PATH",
+        help="path to dataset"
     )
     parser.add_argument(
         "--optimizer_method", default="Adam", type=str, metavar="OPT", help="optimizer method (default: Adam)"
@@ -153,7 +159,7 @@ def main():
     # if args.resume:
     #     load_checkpoint(model, path=args.resume)
 
-    #tag
+    # tag
     if args.resume:
         min_epoch = load_checkpoint(model, path=args.resume)
     else:
@@ -179,7 +185,7 @@ def main():
         train_epoch_losses = []
         # for epoch in range(args.epochs):
         #     if epoch == 0:
-        #tag
+        # tag
         for epoch in range(min_epoch, args.epochs):
             if epoch == min_epoch:
                 logger.info("Initial test...")
@@ -239,6 +245,7 @@ def main():
 
             # 收集每个epoch的loss
             train_epoch_losses.append(train_epoch_loss)
+
 
 if __name__ == "__main__":
     main()
