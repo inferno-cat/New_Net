@@ -10,6 +10,6 @@ python sub_main_base.py \
 --sampler_num 20 \
 --store_folder ./output/base \
 --epochs 25 \
---resume ./output/base/checkpoints/ckpt_epoch_3.pth
+--resume ./output/base/checkpoints/epoch-3-ckpt.pt
 
 
