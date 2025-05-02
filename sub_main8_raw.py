@@ -57,10 +57,6 @@ def get_parser():
         "--resume", default=r"", type=str, metavar="PATH", help="path to latest checkpoint (default: none)"
     )
     parser.add_argument("--store_folder", default="./output", type=str, metavar="PATH", help="path to store folder")
-    # parser.add_argument(
-    #     "--dataset", default="./data/BSDS500_flipped_rotated", type=str, metavar="PATH", help="path to dataset"
-    # )
-    #tag
     parser.add_argument(
         "--dataset", default=r"D:\rawcode\data\BSDS500_flipped_rotated_pad", type=str, metavar="PATH", help="path to dataset"
     )

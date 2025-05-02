@@ -185,8 +185,9 @@ class CPDCBlock(nn.Module):
         )
 
         # 分支通道数
-        branch_channels = in_channels // 4  # 每个分支的输入/输出通道数
-        branch_groups = branch_channels  # 每个分支的分组数（深度卷积）
+        cpdc_channels = in_channels // 2  # cpdc分支的输入/输出通道数
+        branch_channels = cpdc_channels // 4  # 每个分支的输入/输出通道数
+        branch_groups = branch_channels // 2 # 每个分支的分组数（深度卷积）
 
         # 四个分支（conv_d, conv_v, conv_h, conv_c）
         self.conv_d = nn.Sequential(
@@ -212,8 +213,8 @@ class CPDCBlock(nn.Module):
 
         # 合并后的 1x1 分组卷积
         self.conv_merge = nn.Sequential(
-            nn.Conv2d(in_channels, in_channels, 1, 1, 0, groups=groups_init, bias=False),
-            nn.BatchNorm2d(in_channels),
+            nn.Conv2d(cpdc_channels, cpdc_channels, 1, 1, 0, groups=groups_init, bias=False),
+            nn.BatchNorm2d(cpdc_channels),
             nn.ReLU(True)
         )
 
@@ -230,13 +231,13 @@ class CPDCBlock(nn.Module):
                     nn.init.uniform_(m.bias, -bound, bound)
 
     def forward(self, x):
+        # residual = x
         # 初始 1x1 分组卷积 + 通道混洗
-        x = self.conv_init(x)
-        x = channel_shuffle(x, groups=4)
+        # x = self.conv_init(x)
+        # x = channel_shuffle(x, groups=4)
 
         # 通道分割：C/2 作为残差，C/2 分为四份
-        # residual, x = x.chunk(2, dim=1)  # residual: C/2, x: C/2
-        residual = x
+        residual, x = x.chunk(2, dim=1)  # residual: C/2, x: C/2
         x1, x2, x3, x4 = x.chunk(4, dim=1)  # 每个分支：C/8
 
         # 四个分支处理
@@ -250,11 +251,13 @@ class CPDCBlock(nn.Module):
 
         # 合并后的 1x1 分组卷积 + 通道混洗
         x = self.conv_merge(x)
+
+        x = torch.cat([x, residual], dim=1)  # 输出：C
         x = channel_shuffle(x, groups=4)
 
         # 与残差分支合并
         # x = torch.cat([x, residual], dim=1)  # 输出：C
-        x = x + residual  # 残差连接
+        # x = x + residual  # 残差连接
         return x
 
 class MixBlock(nn.Module):
@@ -265,14 +268,14 @@ class MixBlock(nn.Module):
         self.attn_block = ET_attn(branch_channels)
         self.mixconv = nn.Conv2d(in_channels, in_channels, kernel_size=3, stride=1, padding=1, bias=False)
     def forward(self, x):
-        residual = x
+        # residual = x
         x = channel_shuffle(x, groups=2)
         x1, x2 = x.chunk(2, dim=1)  # 每个分支：C/2
         cpdc = self.cpdc_block(x1)
         attn = self.attn_block(x2)
         o = torch.cat([cpdc, attn], dim=1)
         x = channel_shuffle(x, groups=2)
-        x = residual + x
+        # x = residual + x
         return x
 
 class EdgeConv(nn.Module):
@@ -313,9 +316,10 @@ if __name__ == "__main__":
     # weights_conv[[5, 7]] = weights[[4]] - theta * weights[[5, 7]]
     # weights_conv[[0, 2, 6, 8]] = 1 - theta
     # print(weights_conv.view(3, 3))
-    conv = CPDCBlock(32)
+    # conv = CPDCBlock(32)
+    conv = MixBlock(64)
     # conv = ConvFactor(Conv2d, 3, 3, bias=False)
     # print(conv)
-    x = torch.randn(4, 32, 480, 320)
+    x = torch.randn(4, 64, 480, 320)
     out = conv(x)
     print(out.shape)

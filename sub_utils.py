@@ -67,89 +67,40 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
-# def save_checkpoint(state, path="./checkpoint.pth"):
-#     """
-#     Save current state as checkpoint
-#     :param state: Model state.
-#     :param path:  Path of checkpoint file.
-#     """
-#     torch.save(state, path)
-
-#tag
-def save_checkpoint(model, optimizer, epoch, path="./checkpoint.pth"):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    checkpoint = {
-        "epoch": epoch,
-        "state_dict": model.module.state_dict() if isinstance(model, nn.DataParallel) else model.state_dict(),
-        "opt": optimizer.state_dict() if optimizer is not None else None,
-    }
-    torch.save(checkpoint, path)
+def save_checkpoint(state, path="./checkpoint.pth"):
+    """
+    Save current state as checkpoint
+    :param state: Model state.
+    :param path:  Path of checkpoint file.
+    """
+    torch.save(state, path)
 
 
-# def load_checkpoint(net, opt=None, path="./checkpoint.pth"):
-#     """
-#     Load previous pre-trained checkpoint.
-#     :param net:  Network instance.
-#     :param opt:  Optimizer instance.
-#     :param path: Path of checkpoint file.
-#     :return:     Checkpoint epoch number.
-#     """
-#     if osp.isfile(path):
-#         print("=> Loading checkpoint {}...".format(path))
-#         # checkpoint = torch.load(path)
-#         #tag
-#         checkpoint = torch.load(path, weights_only=False)
-#
-#         net.load_state_dict(checkpoint["model"])
-#
-#
-#
-#         if opt is not None:
-#             opt.load_state_dict(checkpoint["opt"])
-#         return checkpoint["epoch"]
-#     else:
-#         raise ValueError("=> No checkpoint found at {}.".format(path))
-
-#tag
-import torch
-import torch.nn as nn
-import os.path as osp
 
 def load_checkpoint(net, opt=None, path="./checkpoint.pth"):
     """
     Load previous pre-trained checkpoint.
-    :param net: Network instance (nn.Module or nn.DataParallel).
-    :param opt: Optimizer instance (optional).
+    :param net:  Network instance.
+    :param opt:  Optimizer instance.
     :param path: Path of checkpoint file.
-    :return: Checkpoint epoch number.
+    :return:     Checkpoint epoch number.
     """
     if osp.isfile(path):
         print("=> Loading checkpoint {}...".format(path))
+        # checkpoint = torch.load(path)
+        #tag
         checkpoint = torch.load(path, weights_only=False)
 
-        # 处理模型权重
-        if isinstance(checkpoint, nn.DataParallel):
-            net.load_state_dict(checkpoint.module.state_dict())
-            epoch = 0
-        elif isinstance(checkpoint, dict) and "state_dict" in checkpoint:
-            state_dict = checkpoint["state_dict"]
-            # 如果 net 是 DataParallel，但 state_dict 没有 module. 前缀，加载到 net.module
-            if isinstance(net, nn.DataParallel):
-                net.module.load_state_dict(state_dict)
-            else:
-                net.load_state_dict(state_dict)
-            epoch = checkpoint.get("epoch", 0)
-        else:
-            net.load_state_dict(checkpoint)
-            epoch = 0
+        net.load_state_dict(checkpoint["model"])
 
-        # 处理优化器状态
-        if opt is not None and isinstance(checkpoint, dict) and "opt" in checkpoint and checkpoint["opt"] is not None:
+
+
+        if opt is not None:
             opt.load_state_dict(checkpoint["opt"])
-
-        return epoch
+        return checkpoint["epoch"]
     else:
         raise ValueError("=> No checkpoint found at {}.".format(path))
+
 
 
 def convert_model_to_standard_conv(model):
@@ -160,7 +111,7 @@ def convert_model_to_standard_conv(model):
 
 
 def save_cpdc(model, path):
-    # convert_model_to_standard_conv(model)
+    convert_model_to_standard_conv(model)
     if isinstance(model, torch.nn.DataParallel):
         torch.save(model.module.state_dict(), path)
     else:

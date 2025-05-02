@@ -179,7 +179,7 @@ def main():
     )
 
     # 2.定义网络
-    model = PDCNet(16).to(device)
+    model = PDCNet(32).to(device)
     # model = MyModel().to(device)
     # model = nn.DataParallel(model)
     logger.info("The number of parameters: {:.2f}M".format(get_model_parm_nums(model)))

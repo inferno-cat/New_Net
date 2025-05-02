@@ -1,13 +1,15 @@
-python sub_main8_raw.py \
+python sub_main_base.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
---train_batch_size 20 \
---sampler_num 20000 \
---store_folder ./output/raw \
---epochs 30
-python sub_main7_raw_shu.py \
+--train_batch_size 8 \
+--sampler_num 20 \
+--store_folder ./output/base \
+--epochs 3
+python sub_main_base.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
---train_batch_size 20 \
---sampler_num 20000 \
---store_folder ./output/raw_shu \
---epochs 30
+--train_batch_size 8 \
+--sampler_num 20 \
+--store_folder ./output/base \
+--epochs 25\
+--resume ./output/base/checkpoints/ckpt_epoch_3.pth
+
 

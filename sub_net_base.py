@@ -6,7 +6,8 @@ import torch.nn.functional as F
 from Sub_Tools.ET_NewNet import PoolBlock
 # from edge import Conv2d, EdgeConv, CPDCBlock, PlainBlock
 # from sub_edge import Conv2d, EdgeConv, CPDCBlock
-from sub_edge90_Light_LWGA import Conv2d, EdgeConv, CPDCBlock, MixBlock
+# from sub_edge91_MSPA_Lightfuse import Conv2d, EdgeConv, CPDCBlock, MixBlock
+from sub_edge_base import Conv2d, EdgeConv, CPDCBlock, MixBlock
 from timm.models.layers import trunc_normal_, DropPath
 from Sub_Tools.AT_UpSample import DySample_UP_Outchannels as AT_UpSample
 from Sub_Tools.AT_DownSample import WTFDown as AT_DownSample
@@ -217,7 +218,7 @@ class MultiScaleContextModule(nn.Module):
             nn.ReLU(inplace=True),
         )
         self.conv1x1 = nn.Conv2d(dim, dim, 1, 1, 0)
-        # self.attn = Squeeze_and_Excitation_Module(dim)
+        self.attn = Squeeze_and_Excitation_Module(dim)
     def forward(self, x):
         residual = x
 
@@ -228,7 +229,7 @@ class MultiScaleContextModule(nn.Module):
 
         o = torch.cat([branch1, branch2, branch3, branch4], dim=1)
         o = self.conv1x1(o)
-        # o = self.attn(o)
+        o = self.attn(o)
         o += residual
 
         return o
@@ -292,7 +293,6 @@ class Decoder(nn.Module):
         self.conv0 = BaseConv(in_channels, in_channels, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
 
         self.conv1 = BaseConv(in_channels, in_channels // 2, 1, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-
         self.conv2 = BaseConv(in_channels // 2, in_channels // 2, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
         self.conv3 = BaseConv(in_channels // 2, in_channels, 1, 1, activation=None, use_bn=True)
 
@@ -305,88 +305,6 @@ class Decoder(nn.Module):
 
         x = self.conv1(x)
         x = self.conv2(x)
-
-        # x = self.conv2_2(x + self.conv2(x))
-
-        x = self.conv3(x)
-
-        x = F.relu(x + x0)
-
-        x = self.conv4(x)
-        x = x + residual
-
-        return F.relu(x)
-
-def channel_shuffle(x, groups):
-    batch, channels, height, width = x.size()
-    channels_per_group = channels // groups
-    x = x.view(batch, groups, channels_per_group, height, width)
-    x = torch.transpose(x, 1, 2).contiguous()
-    x = x.view(batch, -1, height, width)
-    return x
-
-class Shuffle3x3Conv(nn.Module):
-    def __init__(self, in_channels, out_channels = -1, activation=None,):
-        super(Shuffle3x3Conv, self).__init__()
-        self.activation = activation
-        if (out_channels == -1 or out_channels == in_channels):
-            out_channels = in_channels
-        else:
-            raise ValueError("out_channels must be equal to in_channels")
-        if (activation == None):
-            self.activation = nn.ReLU(inplace=True)
-        else:
-            self.activation = activation
-        branch_channels = out_channels // 2
-        self.conv1x1_1 = nn.Conv2d(branch_channels, branch_channels, 1, 1, 0, bias=False)
-        self.bn1 = nn.BatchNorm2d(branch_channels)
-        self.conv3x3_DWConv = nn.Conv2d(branch_channels, branch_channels, 3, 1, 1, groups=branch_channels, bias=False)
-        self.bn2 = nn.BatchNorm2d(branch_channels)
-        self.conv1x1_2 = nn.Conv2d(branch_channels, branch_channels, 1, 1, 0, bias=False)
-        self.bn3 = nn.BatchNorm2d(branch_channels)
-    def forward(self, x):
-        res, x = x.chunk(2, dim=1)
-
-        x = self.conv1x1_1(x)
-        x = self.bn1(x)
-        x = self.activation(x, inplace=True)
-        x = self.conv3x3_DWConv(x)
-        x = self.bn2(x)
-        x = self.conv1x1_2(x)
-        x = self.bn3(x)
-        x = self.activation(x, inplace=True)
-
-        x = torch.cat([x, res], dim=1)
-        x = channel_shuffle(x, 2)
-
-        return x
-
-
-class LightDecoder(nn.Module):
-    def __init__(self, in_channels):
-        super(LightDecoder, self).__init__()
-
-        # self.conv0 = BaseConv(in_channels, in_channels, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-        self.conv0 = Shuffle3x3Conv(in_channels,)
-        self.conv1 = BaseConv(in_channels, in_channels // 2, 1, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-
-        # self.conv2 = BaseConv(in_channels // 2, in_channels // 2, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-        self.conv2 = Shuffle3x3Conv(in_channels // 2,)
-        self.conv3 = BaseConv(in_channels // 2, in_channels, 1, 1, activation=None, use_bn=True)
-
-        # self.conv4 = BaseConv(in_channels, in_channels, 3, 1, use_bn=True)
-        self.conv4 = Shuffle3x3Conv(in_channels,)
-
-    def forward(self, x):
-        residual = x
-
-        x0 = self.conv0(x)
-
-        x = self.conv1(x)
-        x = self.conv2(x)
-
-        # x = self.conv2_2(x + self.conv2(x))
-
         x = self.conv3(x)
 
         x = F.relu(x + x0)
@@ -405,6 +323,7 @@ class DownBlock(nn.Module):
         x1 = self.down1(x)
         x2 = self.down2(x)
         return x1 + x2
+
 class UpBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(UpBlock, self).__init__()
@@ -414,13 +333,12 @@ class UpBlock(nn.Module):
         x1 = self.up1(x)
         x2 = self.up2(x)
         return x1 + x2
+
 class PDCNet(nn.Module):
     def __init__(self, base_dim=16):
         super(PDCNet, self).__init__()
-        # self.block = PlainBlock
-        # self.block = CPDCBlock
-        self.block = MixBlock
-        # self.block = PDDPBlock
+        self.block = CPDCBlock
+        # self.block = MixBlock
         self.in_channels = [base_dim, base_dim * 2, base_dim * 4, base_dim * 4]
         self.stem_conv = nn.Sequential(
             nn.Conv2d(3, self.in_channels[0], 3, 1, 1, bias=False),
@@ -432,106 +350,32 @@ class PDCNet(nn.Module):
         self.stage3 = self._make_layer(self.block, self.in_channels[2], 4)
         self.stage4 = self._make_layer(self.block, self.in_channels[3], 4)
 
-        # self.down2 = DownSample(self.in_channels[0], self.in_channels[1])
-        # self.down3 = DownSample(self.in_channels[1], self.in_channels[2])
-        # self.down4 = DownSample(self.in_channels[2], self.in_channels[3])
-        # self.down2 = AT_DownSample(self.in_channels[0], self.in_channels[1])
-        # self.down3 = AT_DownSample(self.in_channels[1], self.in_channels[2])
-        # self.down4 = AT_DownSample(self.in_channels[2], self.in_channels[3])
         self.down2 = DownBlock(self.in_channels[0], self.in_channels[1])
         self.down3 = DownBlock(self.in_channels[1], self.in_channels[2])
         self.down4 = DownBlock(self.in_channels[2], self.in_channels[3])
-
-        # self.catfuse4 = AT_CatFuse(dim=self.in_channels[3], num_heads=4, group_split=[2, 2], kernel_sizes=[3], window_size=7)
-        # self.catfuse3 = AT_CatFuse(dim=self.in_channels[2], num_heads=8, group_split=[4, 4], kernel_sizes=[3], window_size=7)
-        # self.catfuse2 = AT_CatFuse(dim=self.in_channels[1], num_heads=8, group_split=[4, 4], kernel_sizes=[3], window_size=7)
-        # self.catfuse1 = AT_CatFuse(dim=self.in_channels[0], num_heads=8, group_split=[4, 4], kernel_sizes=[3], window_size=7)
-
-        # self.ssa4 = AT_SSA(size = 4, dim=self.in_channels[3],)
-        # self.ssa3 = AT_SSA(size = 4, dim=self.in_channels[2],)
-        # self.ssa2 = AT_SSA(size = 4, dim=self.in_channels[1],)
-        # self.ssa1 = AT_SSA(size = 4, dim=self.in_channels[0],)
-        #
-        # self.ssa_down4_1 = AT_DownSample(self.in_channels[3], self.in_channels[3])
-        # self.ssa_down4_2 = AT_DownSample(self.in_channels[3], self.in_channels[3])
-        # self.ssa_down3_1 = AT_DownSample(self.in_channels[2], self.in_channels[3])
-        # self.ssa_down3_2 = AT_DownSample(self.in_channels[3], self.in_channels[3])
-        # self.ssa_down2_1 = AT_DownSample(self.in_channels[1], self.in_channels[1])
-        # self.ssa_down2_2 = AT_DownSample(self.in_channels[1], self.in_channels[1])
-        # self.ssa_down1_1 = AT_DownSample(self.in_channels[0], self.in_channels[0])
-        # self.ssa_down1_2 = AT_DownSample(self.in_channels[0], self.in_channels[0])
-        #
-        # self.ssa_up4 = AT_UpSample(self.in_channels[3], self.in_channels[2])
-        # self.ssa_up3 = AT_UpSample(self.in_channels[2], self.in_channels[1])
-        # self.ssa_up2 = AT_UpSample(self.in_channels[1], self.in_channels[0])
-        #
-        # self.ssa_final_up_1 = AT_UpSample(self.in_channels[0], self.in_channels[0])
-        # self.ssa_final_up_2 = AT_UpSample(self.in_channels[0], self.in_channels[0])
-
-        # self.ssa_down1 = AT_DownSample(3, self.in_channels[0])
-        # self.ssa_down2 = AT_DownSample(self.in_channels[0], self.in_channels[0])
-        # self.ssa_down3 = AT_DownSample(self.in_channels[0], self.in_channels[0])
-        # self.ssa = AT_SSA(size=4, dim=self.in_channels[0],)
-        # self.ssa_up1 = AT_UpSample(self.in_channels[0], self.in_channels[0])
-        # self.ssa_up2 = AT_UpSample(self.in_channels[0], self.in_channels[0])
-        # self.ssa_up3 = AT_UpSample(self.in_channels[0], self.in_channels[0])
 
         self.mscm4 = MultiScaleContextModule(self.in_channels[3])
         self.mscm3 = MultiScaleContextModule(self.in_channels[2])
         self.mscm2 = MultiScaleContextModule(self.in_channels[1])
         self.mscm1 = MultiScaleContextModule(self.in_channels[0])
-        # self.mscm4 = AT_MSB(self.in_channels[3])
-        # self.mscm3 = AT_MSB(self.in_channels[2])
-        # self.mscm2 = AT_MSB(self.in_channels[1])
-        # self.mscm1 = AT_MSB(self.in_channels[0])
-
-        # self.mscm4 = MSBlock(self.in_channels[3])
-        # self.mscm3 = MSBlock(self.in_channels[2])
-        # self.mscm2 = MSBlock(self.in_channels[1])
-        # self.mscm1 = MSBlock(self.in_channels[0])
 
         self.de3 = Decoder(self.in_channels[2])
         self.de2 = Decoder(self.in_channels[1])
         self.de1 = Decoder(self.in_channels[0])
-        # self.de3 = nn.Conv2d(self.in_channels[2], self.in_channels[2], 1, 1, 0, bias=False)
-        # self.de2 = nn.Conv2d(self.in_channels[1], self.in_channels[1], 1, 1, 0, bias=False)
-        # self.de1 = nn.Conv2d(self.in_channels[0], self.in_channels[0], 1, 1, 0, bias=False)
 
-        # self.up4 = UpSample(self.in_channels[3], self.in_channels[2])
-        # self.up3 = UpSample(self.in_channels[2], self.in_channels[1])
-        # self.up2 = UpSample(self.in_channels[1], self.in_channels[0])
-        # self.up4 = AT_UpSample(self.in_channels[3], self.in_channels[2])
-        # self.up3 = AT_UpSample(self.in_channels[2], self.in_channels[1])
-        # self.up2 = AT_UpSample(self.in_channels[1], self.in_channels[0])
         self.up4 = UpBlock(self.in_channels[3], self.in_channels[2])
         self.up3 = UpBlock(self.in_channels[2], self.in_channels[1])
         self.up2 = UpBlock(self.in_channels[1], self.in_channels[0])
-
-        # self.fuse_up4 = AT_UpSample(self.in_channels[3], self.in_channels[2])
-        # self.fuse_up3 = AT_UpSample(self.in_channels[2], self.in_channels[1])
-        # self.fuse_up2 = AT_UpSample(self.in_channels[1], self.in_channels[0])
-        #
-        # self.lca3 = AT_LCA(dim=self.in_channels[2], num_heads=4)
-        # self.lca2 = AT_LCA(dim=self.in_channels[1], num_heads=4)
-        # self.lca1 = AT_LCA(dim=self.in_channels[0], num_heads=4)
 
         self.convnext = nn.Sequential(
             BaseConv(3, self.in_channels[0], 3, 1, activation=nn.ReLU(inplace=True), use_bn=True),
             ConvNeXtV2_Block(self.in_channels[0]),
         )
 
-        # self.edge3 = BaseConv(base_dim * 4, 1, 1, 1)
-        # self.edge2 = BaseConv(base_dim * 2, 1, 1, 1)
-        # self.edge1 = BaseConv(base_dim, 1, 1, 1)
-
         self.output_layer = nn.Sequential(
             BaseConv(2 * self.in_channels[0], self.in_channels[0], 1, 1, activation=nn.ReLU(inplace=True)),
             BaseConv(self.in_channels[0], 1, 3, 1),
         )
-        # self.output_layer = nn.Sequential(
-        #     BaseConv(3 * self.in_channels[0], self.in_channels[0], 1, 1, activation=nn.ReLU(inplace=True)),
-        #     BaseConv(self.in_channels[0], 1, 3, 1),
-        # )
 
     def _make_layer(self, block, dim, block_nums):
         layers = []
@@ -585,7 +429,7 @@ class PDCNet(nn.Module):
 
 
 if __name__ == "__main__":
-    net = PDCNet(32)
+    net = PDCNet(16)
     x = torch.randn(4, 3, 480, 320)
     y = net(x)
     print(y.shape)

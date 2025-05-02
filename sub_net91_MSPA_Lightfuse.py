@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from Sub_Tools.ET_NewNet import PoolBlock
 # from edge import Conv2d, EdgeConv, CPDCBlock, PlainBlock
 # from sub_edge import Conv2d, EdgeConv, CPDCBlock
-from sub_edge90_Light_LWGA import Conv2d, EdgeConv, CPDCBlock, MixBlock
+from sub_edge91_MSPA_Lightfuse import Conv2d, EdgeConv, CPDCBlock, MixBlock
 from timm.models.layers import trunc_normal_, DropPath
 from Sub_Tools.AT_UpSample import DySample_UP_Outchannels as AT_UpSample
 from Sub_Tools.AT_DownSample import WTFDown as AT_DownSample
@@ -317,85 +317,6 @@ class Decoder(nn.Module):
 
         return F.relu(x)
 
-def channel_shuffle(x, groups):
-    batch, channels, height, width = x.size()
-    channels_per_group = channels // groups
-    x = x.view(batch, groups, channels_per_group, height, width)
-    x = torch.transpose(x, 1, 2).contiguous()
-    x = x.view(batch, -1, height, width)
-    return x
-
-class Shuffle3x3Conv(nn.Module):
-    def __init__(self, in_channels, out_channels = -1, activation=None,):
-        super(Shuffle3x3Conv, self).__init__()
-        self.activation = activation
-        if (out_channels == -1 or out_channels == in_channels):
-            out_channels = in_channels
-        else:
-            raise ValueError("out_channels must be equal to in_channels")
-        if (activation == None):
-            self.activation = nn.ReLU(inplace=True)
-        else:
-            self.activation = activation
-        branch_channels = out_channels // 2
-        self.conv1x1_1 = nn.Conv2d(branch_channels, branch_channels, 1, 1, 0, bias=False)
-        self.bn1 = nn.BatchNorm2d(branch_channels)
-        self.conv3x3_DWConv = nn.Conv2d(branch_channels, branch_channels, 3, 1, 1, groups=branch_channels, bias=False)
-        self.bn2 = nn.BatchNorm2d(branch_channels)
-        self.conv1x1_2 = nn.Conv2d(branch_channels, branch_channels, 1, 1, 0, bias=False)
-        self.bn3 = nn.BatchNorm2d(branch_channels)
-    def forward(self, x):
-        res, x = x.chunk(2, dim=1)
-
-        x = self.conv1x1_1(x)
-        x = self.bn1(x)
-        x = self.activation(x, inplace=True)
-        x = self.conv3x3_DWConv(x)
-        x = self.bn2(x)
-        x = self.conv1x1_2(x)
-        x = self.bn3(x)
-        x = self.activation(x, inplace=True)
-
-        x = torch.cat([x, res], dim=1)
-        x = channel_shuffle(x, 2)
-
-        return x
-
-
-class LightDecoder(nn.Module):
-    def __init__(self, in_channels):
-        super(LightDecoder, self).__init__()
-
-        # self.conv0 = BaseConv(in_channels, in_channels, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-        self.conv0 = Shuffle3x3Conv(in_channels,)
-        self.conv1 = BaseConv(in_channels, in_channels // 2, 1, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-
-        # self.conv2 = BaseConv(in_channels // 2, in_channels // 2, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-        self.conv2 = Shuffle3x3Conv(in_channels // 2,)
-        self.conv3 = BaseConv(in_channels // 2, in_channels, 1, 1, activation=None, use_bn=True)
-
-        # self.conv4 = BaseConv(in_channels, in_channels, 3, 1, use_bn=True)
-        self.conv4 = Shuffle3x3Conv(in_channels,)
-
-    def forward(self, x):
-        residual = x
-
-        x0 = self.conv0(x)
-
-        x = self.conv1(x)
-        x = self.conv2(x)
-
-        # x = self.conv2_2(x + self.conv2(x))
-
-        x = self.conv3(x)
-
-        x = F.relu(x + x0)
-
-        x = self.conv4(x)
-        x = x + residual
-
-        return F.relu(x)
-
 class DownBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(DownBlock, self).__init__()
@@ -585,7 +506,7 @@ class PDCNet(nn.Module):
 
 
 if __name__ == "__main__":
-    net = PDCNet(32)
+    net = PDCNet(16)
     x = torch.randn(4, 3, 480, 320)
     y = net(x)
     print(y.shape)
