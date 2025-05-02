@@ -314,26 +314,6 @@ class Decoder(nn.Module):
 
         return F.relu(x)
 
-class DownBlock(nn.Module):
-    def __init__(self, in_channels, out_channels):
-        super(DownBlock, self).__init__()
-        self.down1 = DownSample(in_channels, out_channels)
-        self.down2 = PoolBlock(in_channels, out_channels, kernel_size=2, stride=2)
-    def forward(self, x):
-        x1 = self.down1(x)
-        x2 = self.down2(x)
-        return x1 + x2
-
-class UpBlock(nn.Module):
-    def __init__(self, in_channels, out_channels):
-        super(UpBlock, self).__init__()
-        self.up1 = UpSample(in_channels, out_channels)
-        self.up2 = AT_UpSample(in_channels, out_channels)
-    def forward(self, x):
-        x1 = self.up1(x)
-        x2 = self.up2(x)
-        return x1 + x2
-
 class PDCNet(nn.Module):
     def __init__(self, base_dim=16):
         super(PDCNet, self).__init__()
@@ -350,9 +330,9 @@ class PDCNet(nn.Module):
         self.stage3 = self._make_layer(self.block, self.in_channels[2], 4)
         self.stage4 = self._make_layer(self.block, self.in_channels[3], 4)
 
-        self.down2 = DownBlock(self.in_channels[0], self.in_channels[1])
-        self.down3 = DownBlock(self.in_channels[1], self.in_channels[2])
-        self.down4 = DownBlock(self.in_channels[2], self.in_channels[3])
+        self.down2 = DownSample(self.in_channels[0], self.in_channels[1])
+        self.down3 = DownSample(self.in_channels[1], self.in_channels[2])
+        self.down4 = DownSample(self.in_channels[2], self.in_channels[3])
 
         self.mscm4 = MultiScaleContextModule(self.in_channels[3])
         self.mscm3 = MultiScaleContextModule(self.in_channels[2])
@@ -363,9 +343,9 @@ class PDCNet(nn.Module):
         self.de2 = Decoder(self.in_channels[1])
         self.de1 = Decoder(self.in_channels[0])
 
-        self.up4 = UpBlock(self.in_channels[3], self.in_channels[2])
-        self.up3 = UpBlock(self.in_channels[2], self.in_channels[1])
-        self.up2 = UpBlock(self.in_channels[1], self.in_channels[0])
+        self.up4 = UpSample(self.in_channels[3], self.in_channels[2])
+        self.up3 = UpSample(self.in_channels[2], self.in_channels[1])
+        self.up2 = UpSample(self.in_channels[1], self.in_channels[0])
 
         self.convnext = nn.Sequential(
             BaseConv(3, self.in_channels[0], 3, 1, activation=nn.ReLU(inplace=True), use_bn=True),

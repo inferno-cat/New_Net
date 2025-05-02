@@ -8,3 +8,12 @@
 因此考虑在2_MSPA中将其替换为1x1卷积，即91_MSPA_Lightfuse
 91_MSPA_Lightfuse的参数从1.41MB降到0.80MB，显然想法是对的...但是担心融合效果会因此大幅度降低
 MSPA的存在导致训练速度显著降低，需要更加高效的注意力机制
+
+
+有点尴尬，改进后的门控se还是打不过baseline，但是baseline复现不了...重新跑一遍，希望能出结果
+base:源代码
+MSPA:并联了MSPA模块
+MSPA_up:MSPA的基础上将上采样换成了Dysample
+
+以上是在实验室服务器跑的，保证准确，下面是需要租显卡跑验证是否有优化效果的：
+decoder: 将base的decoder替换为基于shufflenet思想改进的decoder
