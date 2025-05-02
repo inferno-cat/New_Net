@@ -2,7 +2,7 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 import os
-AT_CUDA = 0
+AT_CUDA = 5
 if AT_CUDA != 0:
     os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
     from sub_GPU_check import check_gpu_memory
