@@ -50,10 +50,16 @@
 #--store_folder ./output/MSPA_before_decoder \
 #--epochs 25
 
-python sub_main98_94_93.py \
+#python sub_main98_94_93.py \
+#--dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
+#--train_batch_size 8 \
+#--sampler_num 20000 \
+#--store_folder ./output/98 \
+#--epochs 25
+
+python sub_main99_92_93_94.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
 --train_batch_size 8 \
 --sampler_num 20000 \
---store_folder ./output/98 \
+--store_folder ./output/99 \
 --epochs 25
-
