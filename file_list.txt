@@ -28,18 +28,24 @@ MSPA 2
 base base
 MSPA_up 92
 MSPA_Lightfusion 94
+91 0.769 降低 1x1卷积直接替换掉了3x3卷积 91误用了upblock，可能有误，但以后再说
+93 0.775 提高 将decoder的3*3卷积替换为FastConvList很有用
+95 0.768 降低 shuffle decoder废物
 
 结论：
 源代码依然只能跑到770，跑不到775
 MSPA能提升性能，但是只到771，不够
-Lightfusion里面取代3*3卷积的新卷积成功了，提升到774
+Lightfusion里面取代3*3卷积的新融合方式成功了，提升到774
 MSPA_up无法理解为什么效果这么好达到776
+将decoder的3*3卷积替换为FastConvList很有用，提高到775
+shuffle decoder废物
+mixblock的融合不能直接用1x1
 
 Todo：
 MFM和DFF两种融合模块的验证 96 分别在16和15号租的显卡上跑着呢
-测试效果： 95_base_decoder2 14号显卡 是将decoder换成3个shufflenet思想的模块串联 ？疑似有两版文件，暂停下载，稍后重新从服务器下载试试
-测试效果： 91_MSPA_Lightfuse_wrongupdown-out30 是将3*3直接改为1*1，但是上采样误用了upblock
-测试效果： 93_MSPA_decoder-out30 将decoder中的3*3卷积改为了FastConvList（2层），上下采样都没弄错
+(已完成)测试效果： 95_base_decoder2 14号显卡 是将decoder换成3个shufflenet思想的模块串联 ？疑似有两版文件，暂停下载，稍后重新从服务器下载试试
+(已完成)测试效果： 91_MSPA_Lightfuse_wrongupdown-out30 是将3*3直接改为1*1，但是上采样误用了upblock
+(已完成)测试效果： 93_MSPA_decoder-out30 将decoder中的3*3卷积改为了FastConvList（2层），上下采样都没弄错
 
 寻找baseline效果不佳的原因
 

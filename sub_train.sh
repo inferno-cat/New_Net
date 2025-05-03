@@ -57,9 +57,16 @@
 #--store_folder ./output/98 \
 #--epochs 25
 
-python sub_main99_92_93_94.py \
+#python sub_main99_92_93_94.py \
+#--dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
+#--train_batch_size 8 \
+#--sampler_num 20000 \
+#--store_folder ./output/99 \
+#--epochs 25
+
+python sub_main990_92_93_94_97.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
 --train_batch_size 8 \
 --sampler_num 20000 \
---store_folder ./output/99 \
+--store_folder ./output/990 \
 --epochs 25
