@@ -1,9 +1,7 @@
 import warnings
-
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 import os
-
 AT_CUDA = 0
 if AT_CUDA != -1:
     os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
@@ -17,9 +15,9 @@ else:
     AT_CUDA = 0
 os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
 import torch
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Selected device: {device}")
+
 os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
 import torch
 import random
@@ -27,26 +25,18 @@ import argparse
 import numpy as np
 import torch.nn as nn
 import torch.optim as optim
-# from utils import get_logger
 from datetime import datetime
-# from dataset import BsdsDataset, NyudDataset, VOCDataset
 from sub_dataset import BsdsDataset, NyudDataset, VOCDataset
-# from tester import test_bsds , test_nyud
-# from trainer import train_bsds, train_nyud, train_voc
-from sub_tester import test_bsds, test_nyud
+from sub_tester import test_bsds , test_nyud
 from sub_trainer import train_bsds, train_nyud, train_voc
 # from model.model_eff_b7 import MyModel
-# from pdc_attention_network import PDCNet
-# from loss import Loss
-# from utils import load_checkpoint, save_checkpoint, send_email, get_model_parm_nums, save_cpdc
 from sub_loss import Loss
 from sub_utils import load_checkpoint, save_checkpoint, send_email, get_model_parm_nums, save_cpdc
 from torch.utils.data import DataLoader
 
-# from Sub_Tools.ET_pdc_network import PDCNet
-from sub_net93_MSPA_decoder import PDCNet
+# from pdc_attention_network import PDCNet
+from sub_net95_base_decoder2 import PDCNet
 from sub_utils import get_logger
-
 
 # 1.参数定义
 def get_parser():
@@ -54,10 +44,10 @@ def get_parser():
     parser.add_argument("--seed", default=42, type=int, help="seed for initialization")
     parser.add_argument("--test", default=False, help="Only test the model", action="store_true")
     parser.add_argument("--ms", default=False, help="Multi-scale test the model", action="store_true")
-    parser.add_argument("--train_batch_size", default=4, type=int, metavar="N", help="training batch size")
+    parser.add_argument("--train_batch_size", default=1, type=int, metavar="N", help="training batch size")
     parser.add_argument("--test_batch_size", default=1, type=int, metavar="N", help="testing batch size")
     parser.add_argument("--num_workers", default=1, type=int, metavar="N", help="number of workers")
-    parser.add_argument("--sampler_num", default=20000, type=int, metavar="N", help="sampler num")
+    parser.add_argument("--sampler_num", default=20, type=int, metavar="N", help="sampler num")
     parser.add_argument("--epochs", default=40, type=int, metavar="N", help="number of total epochs to run")
     parser.add_argument(
         "--lr", "--learning_rate", default=1e-4, type=float, metavar="LR", help="initial learning rate", dest="lr"
@@ -78,10 +68,9 @@ def get_parser():
     # parser.add_argument(
     #     "--dataset", default="./data/BSDS500_flipped_rotated", type=str, metavar="PATH", help="path to dataset"
     # )
-    # tag
+    #tag
     parser.add_argument(
-        "--dataset", default=r"D:\rawcode\data\BSDS500_flipped_rotated_pad", type=str, metavar="PATH",
-        help="path to dataset"
+        "--dataset", default=r"D:\rawcode\data\BSDS500_flipped_rotated_pad", type=str, metavar="PATH", help="path to dataset"
     )
     parser.add_argument(
         "--optimizer_method", default="Adam", type=str, metavar="OPT", help="optimizer method (default: Adam)"
@@ -110,9 +99,6 @@ def main():
         np.random.seed(args.seed)
         random.seed(args.seed)
 
-    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # print('device:', device)
-
     current_dir = os.path.abspath(os.path.dirname(__file__))
     store_dir = os.path.join(current_dir, args.store_folder)
     print('current_dir:', current_dir)
@@ -137,7 +123,7 @@ def main():
     # 2.定义网络
     model = PDCNet(16).to(device)
     # model = MyModel().to(device)
-    model = nn.DataParallel(model)
+    # model = nn.DataParallel(model)
     logger.info("The number of parameters: {:.2f}M".format(get_model_parm_nums(model)))
     logger.info(args)
 
@@ -161,7 +147,7 @@ def main():
     # if args.resume:
     #     load_checkpoint(model, path=args.resume)
 
-    # tag
+    #tag
     if args.resume:
         min_epoch = load_checkpoint(model, path=args.resume)
     else:
@@ -187,7 +173,7 @@ def main():
         train_epoch_losses = []
         # for epoch in range(args.epochs):
         #     if epoch == 0:
-        # tag
+        #tag
         for epoch in range(min_epoch, args.epochs):
             if epoch == min_epoch:
                 logger.info("Initial test...")
@@ -245,8 +231,8 @@ def main():
             )
             save_cpdc(model, path=os.path.join(store_dir, 'standard', "epoch-{}-ckpt.pt".format(epoch + 1)))
 
-            # 收集每个epoch的loss
             train_epoch_losses.append(train_epoch_loss)
+
 
 
 if __name__ == "__main__":

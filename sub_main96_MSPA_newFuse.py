@@ -3,7 +3,6 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 import os
-
 AT_CUDA = 0
 if AT_CUDA != -1:
     os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
@@ -44,7 +43,7 @@ from sub_utils import load_checkpoint, save_checkpoint, send_email, get_model_pa
 from torch.utils.data import DataLoader
 
 # from Sub_Tools.ET_pdc_network import PDCNet
-from sub_net93_MSPA_decoder import PDCNet
+from sub_net96_MSPA_newFuse import PDCNet
 from sub_utils import get_logger
 
 

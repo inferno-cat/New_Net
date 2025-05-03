@@ -36,10 +36,17 @@
 #--epochs 25
 #还没跑93，先验证fusion
 
-python sub_main94_MSPA_Lightfusion.py \
+#python sub_main94_MSPA_Lightfusion.py \
+#--dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
+#--train_batch_size 8 \
+#--sampler_num 20000 \
+#--store_folder ./output/MSPA_Lightfusion \
+#--epochs 25
+
+python sub_main97_MSPA_before_decoder.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
 --train_batch_size 8 \
 --sampler_num 20000 \
---store_folder ./output/MSPA_Lightfusion \
+--store_folder ./output/MSPA_before_decoder \
 --epochs 25
 

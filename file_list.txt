@@ -17,3 +17,7 @@ MSPA_up:MSPA的基础上将上采样换成了Dysample
 
 以上是在实验室服务器跑的，保证准确，下面是需要租显卡跑验证是否有优化效果的：
 decoder: 将base的decoder替换为基于shufflenet思想改进的decoder
+
+考虑使用模块75b MFM的改版，取代3*3实现融合
+还有62a CCFF改版
+

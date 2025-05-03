@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from Sub_Tools.ET_NewNet import PoolBlock
 # from edge import Conv2d, EdgeConv, CPDCBlock, PlainBlock
 # from sub_edge import Conv2d, EdgeConv, CPDCBlock
-from sub_edge93_MSPA_decoder import Conv2d, EdgeConv, CPDCBlock, MixBlock
+from sub_edge97_MSPA_before_decoder import Conv2d, EdgeConv, CPDCBlock, MixBlock
 from timm.models.layers import trunc_normal_, DropPath
 from Sub_Tools.AT_UpSample import DySample_UP_Outchannels as AT_UpSample
 from Sub_Tools.AT_DownSample import WTFDown as AT_DownSample
@@ -21,7 +21,7 @@ from Sub_Tools.AT_LWGA import DynamicLWGA_Block as AT_LWGA
 from Sub_Tools.AT_SMFA import SMFADynamicDownscale as AT_SMFA
 from Sub_Tools.AT_SSA import SAABlocklist as AT_SSA
 from Sub_Tools.ET_PDDPBlock import PDDPBlock
-from Sub_Tools.XT_Fastconv import FastConvList
+from Sub_Tools.AT_FCA import MultiScaleFCAttention
 
 import torch
 import torch.nn as nn
@@ -290,18 +290,15 @@ class Decoder(nn.Module):
     def __init__(self, in_channels):
         super(Decoder, self).__init__()
 
-        # self.conv0 = BaseConv(in_channels, in_channels, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-        self.conv0 = FastConvList(in_channels=in_channels, size=2,)
+        self.conv0 = BaseConv(in_channels, in_channels, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
 
         self.conv1 = BaseConv(in_channels, in_channels // 2, 1, 1, activation=nn.ReLU(inplace=True), use_bn=True)
 
-        # self.conv2 = BaseConv(in_channels // 2, in_channels // 2, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-        self.conv2 = FastConvList(in_channels=in_channels // 2, size=2,)
-
+        self.conv2 = BaseConv(in_channels // 2, in_channels // 2, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
         self.conv3 = BaseConv(in_channels // 2, in_channels, 1, 1, activation=None, use_bn=True)
 
-        # self.conv4 = BaseConv(in_channels, in_channels, 3, 1, use_bn=True)
-        self.conv4 = FastConvList(in_channels=in_channels, size=2,)
+        self.conv4 = BaseConv(in_channels, in_channels, 3, 1, use_bn=True)
+
     def forward(self, x):
         residual = x
 
@@ -321,24 +318,6 @@ class Decoder(nn.Module):
 
         return F.relu(x)
 
-class DownBlock(nn.Module):
-    def __init__(self, in_channels, out_channels):
-        super(DownBlock, self).__init__()
-        self.down1 = DownSample(in_channels, out_channels)
-        self.down2 = PoolBlock(in_channels, out_channels, kernel_size=2, stride=2)
-    def forward(self, x):
-        x1 = self.down1(x)
-        x2 = self.down2(x)
-        return x1 + x2
-class UpBlock(nn.Module):
-    def __init__(self, in_channels, out_channels):
-        super(UpBlock, self).__init__()
-        self.up1 = UpSample(in_channels, out_channels)
-        self.up2 = AT_UpSample(in_channels, out_channels)
-    def forward(self, x):
-        x1 = self.up1(x)
-        x2 = self.up2(x)
-        return x1 + x2
 class PDCNet(nn.Module):
     def __init__(self, base_dim=16):
         super(PDCNet, self).__init__()
@@ -364,9 +343,22 @@ class PDCNet(nn.Module):
         self.mscm2 = MultiScaleContextModule(self.in_channels[1])
         self.mscm1 = MultiScaleContextModule(self.in_channels[0])
 
-        self.de3 = Decoder(self.in_channels[2])
-        self.de2 = Decoder(self.in_channels[1])
-        self.de1 = Decoder(self.in_channels[0])
+        # self.de3 = Decoder(self.in_channels[2])
+        # self.de2 = Decoder(self.in_channels[1])
+        # self.de1 = Decoder(self.in_channels[0])
+        self.de3 = nn.Sequential(
+            Decoder(self.in_channels[2]),
+            MultiScaleFCAttention(self.in_channels[2]),
+        )
+        self.de2 = nn.Sequential(
+            Decoder(self.in_channels[1]),
+            MultiScaleFCAttention(self.in_channels[1]),
+        )
+        self.de1 = nn.Sequential(
+            Decoder(self.in_channels[0]),
+            MultiScaleFCAttention(self.in_channels[0]),
+        )
+
 
         self.up4 = UpSample(self.in_channels[3], self.in_channels[2])
         self.up3 = UpSample(self.in_channels[2], self.in_channels[1])

@@ -6,7 +6,8 @@ import torch.nn.functional as F
 from Sub_Tools.ET_NewNet import PoolBlock
 # from edge import Conv2d, EdgeConv, CPDCBlock, PlainBlock
 # from sub_edge import Conv2d, EdgeConv, CPDCBlock
-from sub_edge93_MSPA_decoder import Conv2d, EdgeConv, CPDCBlock, MixBlock
+# from sub_edge91_MSPA_Lightfuse import Conv2d, EdgeConv, CPDCBlock, MixBlock
+from sub_edge95_base_decoder2 import Conv2d, EdgeConv, CPDCBlock, MixBlock
 from timm.models.layers import trunc_normal_, DropPath
 from Sub_Tools.AT_UpSample import DySample_UP_Outchannels as AT_UpSample
 from Sub_Tools.AT_DownSample import WTFDown as AT_DownSample
@@ -21,7 +22,8 @@ from Sub_Tools.AT_LWGA import DynamicLWGA_Block as AT_LWGA
 from Sub_Tools.AT_SMFA import SMFADynamicDownscale as AT_SMFA
 from Sub_Tools.AT_SSA import SAABlocklist as AT_SSA
 from Sub_Tools.ET_PDDPBlock import PDDPBlock
-from Sub_Tools.XT_Fastconv import FastConvList
+
+import torch.nn.init as init
 
 import torch
 import torch.nn as nn
@@ -218,7 +220,7 @@ class MultiScaleContextModule(nn.Module):
             nn.ReLU(inplace=True),
         )
         self.conv1x1 = nn.Conv2d(dim, dim, 1, 1, 0)
-        # self.attn = Squeeze_and_Excitation_Module(dim)
+        self.attn = Squeeze_and_Excitation_Module(dim)
     def forward(self, x):
         residual = x
 
@@ -229,7 +231,7 @@ class MultiScaleContextModule(nn.Module):
 
         o = torch.cat([branch1, branch2, branch3, branch4], dim=1)
         o = self.conv1x1(o)
-        # o = self.attn(o)
+        o = self.attn(o)
         o += residual
 
         return o
@@ -290,18 +292,14 @@ class Decoder(nn.Module):
     def __init__(self, in_channels):
         super(Decoder, self).__init__()
 
-        # self.conv0 = BaseConv(in_channels, in_channels, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-        self.conv0 = FastConvList(in_channels=in_channels, size=2,)
+        self.conv0 = BaseConv(in_channels, in_channels, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
 
         self.conv1 = BaseConv(in_channels, in_channels // 2, 1, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-
-        # self.conv2 = BaseConv(in_channels // 2, in_channels // 2, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-        self.conv2 = FastConvList(in_channels=in_channels // 2, size=2,)
-
+        self.conv2 = BaseConv(in_channels // 2, in_channels // 2, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
         self.conv3 = BaseConv(in_channels // 2, in_channels, 1, 1, activation=None, use_bn=True)
 
-        # self.conv4 = BaseConv(in_channels, in_channels, 3, 1, use_bn=True)
-        self.conv4 = FastConvList(in_channels=in_channels, size=2,)
+        self.conv4 = BaseConv(in_channels, in_channels, 3, 1, use_bn=True)
+
     def forward(self, x):
         residual = x
 
@@ -309,9 +307,6 @@ class Decoder(nn.Module):
 
         x = self.conv1(x)
         x = self.conv2(x)
-
-        # x = self.conv2_2(x + self.conv2(x))
-
         x = self.conv3(x)
 
         x = F.relu(x + x0)
@@ -321,29 +316,150 @@ class Decoder(nn.Module):
 
         return F.relu(x)
 
-class DownBlock(nn.Module):
-    def __init__(self, in_channels, out_channels):
-        super(DownBlock, self).__init__()
-        self.down1 = DownSample(in_channels, out_channels)
-        self.down2 = PoolBlock(in_channels, out_channels, kernel_size=2, stride=2)
+
+# class LightDecoder(nn.Module):
+#     def __init__(self, in_channels, out_channels=-1, groups=2):
+#         super(LightDecoder, self).__init__()
+#         # 如果out_channels为-1，设置为in_channels
+#         if out_channels == -1:
+#             out_channels = in_channels
+#         assert out_channels == in_channels, "Output channels must equal input channels"
+#         self.in_channels = in_channels
+#         self.mid_channels = in_channels // 2
+#         self.low_channels = in_channels // 4
+#         self.groups = groups
+#
+#         # 卷积支
+#         self.conv1 = nn.Conv2d(self.mid_channels, self.mid_channels, kernel_size=3, stride=1, padding=1, groups=groups,
+#                                bias=False)
+#         self.bn1 = nn.BatchNorm2d(self.mid_channels)
+#         # 无ReLU，减少元素级操作
+#         self.conv2 = BaseConv(self.mid_channels, self.low_channels, kernel_size=1, stride=1,
+#                               activation=nn.ReLU(inplace=True), use_bn=True)
+#         self.conv3 = nn.Conv2d(self.low_channels, self.low_channels, kernel_size=3, stride=1, padding=1, groups=groups,
+#                                bias=False)
+#         self.bn3 = nn.BatchNorm2d(self.low_channels)
+#         self.conv4 = nn.Conv2d(self.low_channels, self.mid_channels, kernel_size=1, stride=1, padding=0, bias=False)
+#         self.bn4 = nn.BatchNorm2d(self.mid_channels)
+#
+#         # 最终卷积
+#         self.conv_final = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1, groups=groups,
+#                                     bias=False)
+#         self.bn_final = nn.BatchNorm2d(out_channels)
+#
+#         # 残差连接的ReLU
+#         self.relu = nn.ReLU(inplace=True)
+#
+#         # 初始化权重
+#         self._initialize_weights()
+#
+#     def _initialize_weights(self):
+#         for m in self.modules():
+#             if isinstance(m, nn.Conv2d):
+#                 init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+#             elif isinstance(m, nn.BatchNorm2d):
+#                 init.constant_(m.weight, 1.0)
+#                 init.constant_(m.bias, 0.0)
+#                 init.constant_(m.running_mean, 0.0)
+#                 init.constant_(m.running_var, 1.0)
+#
+#     def forward(self, x):
+#         # 通道分割
+#         identity, conv = x[:, :self.mid_channels, :, :], x[:, self.mid_channels:, :, :]
+#
+#         # 卷积支
+#         conv = self.conv1(conv)
+#         conv = self.bn1(conv)
+#         conv = self.conv2(conv)
+#         conv = self.conv3(conv)
+#         conv = self.bn3(conv)
+#         conv = self.conv4(conv)
+#         conv = self.bn4(conv)
+#
+#         # Concat
+#         out = torch.cat([identity, conv], dim=1)
+#
+#         # 最终卷积
+#         out = self.conv_final(out)
+#         out = self.bn_final(out)
+#
+#         # 残差连接
+#         out = out + x
+#         out = self.relu(out)
+#
+#         return out
+
+def channel_shuffle(x, groups):
+    """通道重排操作"""
+    batchsize, num_channels, height, width = x.size()
+    channels_per_group = num_channels // groups
+    # 重塑
+    x = x.view(batchsize, groups, channels_per_group, height, width)
+    # 转置
+    x = torch.transpose(x, 1, 2).contiguous()
+    # 展平
+    x = x.view(batchsize, -1, height, width)
+    return x
+
+class ShuffleDecoder(nn.Module):
+    def __init__(self, in_channels, groups=4):
+        super(ShuffleDecoder, self).__init__()
+        self.groups = groups
+        self.out_channels = in_channels // 2  # 每支的通道数
+
+        # 卷积分支：1x1分组卷积
+        self.conv1 = BaseConv(
+            in_channels // 2, self.out_channels, 1, 1,
+            groups=groups, activation=nn.ReLU(inplace=True), use_bn=True
+        )
+        # 3x3深度卷积
+        self.conv2 = BaseConv(
+            self.out_channels, self.out_channels, 3, 1,
+            groups=self.out_channels, activation=None, use_bn=True  # 深度卷积
+        )
+        # 1x1分组卷积
+        self.conv3 = BaseConv(
+            self.out_channels, self.out_channels, 1, 1,
+            groups=groups, activation=None, use_bn=True
+        )
+        # 后处理：1x1卷积增强特征混合
+        self.conv4 = BaseConv(
+            in_channels, in_channels, 1, 1,
+            activation=nn.ReLU(inplace=True), use_bn=True
+        )
+
     def forward(self, x):
-        x1 = self.down1(x)
-        x2 = self.down2(x)
-        return x1 + x2
-class UpBlock(nn.Module):
-    def __init__(self, in_channels, out_channels):
-        super(UpBlock, self).__init__()
-        self.up1 = UpSample(in_channels, out_channels)
-        self.up2 = AT_UpSample(in_channels, out_channels)
-    def forward(self, x):
-        x1 = self.up1(x)
-        x2 = self.up2(x)
-        return x1 + x2
+        residual = x
+
+        # 通道分割
+        x1, x2 = x.chunk(2, dim=1)  # 分为两支，各 in_channels // 2
+
+        # 卷积分支
+        x2 = self.conv1(x2)
+        x2 = self.conv2(x2)
+        x2 = self.conv3(x2)
+
+        # 合并
+        x = torch.cat([x1, x2], dim=1)  # 通道数恢复为 in_channels
+
+        # 通道重排
+        x = channel_shuffle(x, self.groups)
+
+        # 后处理
+        x = self.conv4(x)
+
+        # 残差连接
+        x = x + residual
+        x = F.relu(x)
+
+        return x
+
+
 class PDCNet(nn.Module):
     def __init__(self, base_dim=16):
         super(PDCNet, self).__init__()
-        # self.block = CPDCBlock
-        self.block = MixBlock
+        self.block = CPDCBlock
+        # self.block = MixBlock
         self.in_channels = [base_dim, base_dim * 2, base_dim * 4, base_dim * 4]
         self.stem_conv = nn.Sequential(
             nn.Conv2d(3, self.in_channels[0], 3, 1, 1, bias=False),
@@ -364,16 +480,30 @@ class PDCNet(nn.Module):
         self.mscm2 = MultiScaleContextModule(self.in_channels[1])
         self.mscm1 = MultiScaleContextModule(self.in_channels[0])
 
-        self.de3 = Decoder(self.in_channels[2])
-        self.de2 = Decoder(self.in_channels[1])
-        self.de1 = Decoder(self.in_channels[0])
-
+        # self.de3 = Decoder(self.in_channels[2])
+        # self.de2 = Decoder(self.in_channels[1])
+        # self.de1 = Decoder(self.in_channels[0])
+        # self.de3 = LightDecoder(self.in_channels[2])
+        # self.de2 = LightDecoder(self.in_channels[1])
+        # self.de1 = LightDecoder(self.in_channels[0])
+        self.de3 = nn.Sequential(
+            ShuffleDecoder(self.in_channels[2]),
+            ShuffleDecoder(self.in_channels[2]),
+            ShuffleDecoder(self.in_channels[2]),
+        )
+        self.de2 = nn.Sequential(
+            ShuffleDecoder(self.in_channels[1]),
+            ShuffleDecoder(self.in_channels[1]),
+            ShuffleDecoder(self.in_channels[1]),
+        )
+        self.de1 = nn.Sequential(
+            ShuffleDecoder(self.in_channels[0]),
+            ShuffleDecoder(self.in_channels[0]),
+            ShuffleDecoder(self.in_channels[0]),
+        )
         self.up4 = UpSample(self.in_channels[3], self.in_channels[2])
         self.up3 = UpSample(self.in_channels[2], self.in_channels[1])
         self.up2 = UpSample(self.in_channels[1], self.in_channels[0])
-        # self.up4 = AT_UpSample(self.in_channels[3], self.in_channels[2])
-        # self.up3 = AT_UpSample(self.in_channels[2], self.in_channels[1])
-        # self.up2 = AT_UpSample(self.in_channels[1], self.in_channels[0])
 
         self.convnext = nn.Sequential(
             BaseConv(3, self.in_channels[0], 3, 1, activation=nn.ReLU(inplace=True), use_bn=True),
