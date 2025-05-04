@@ -77,9 +77,33 @@ def save_checkpoint(state, path="./checkpoint.pth"):
 
 
 
+# def load_checkpoint(net, opt=None, path="./checkpoint.pth"):
+#     """
+#     Load previous pre-trained checkpoint.
+#     :param net:  Network instance.
+#     :param opt:  Optimizer instance.
+#     :param path: Path of checkpoint file.
+#     :return:     Checkpoint epoch number.
+#     """
+#     if osp.isfile(path):
+#         print("=> Loading checkpoint {}...".format(path))
+#         checkpoint = torch.load(path)
+#         # tag
+#         # checkpoint = torch.load(path, weights_only=False)
+#
+#         net.load_state_dict(checkpoint["model"])
+#
+#
+#
+#         if opt is not None:
+#             opt.load_state_dict(checkpoint["opt"])
+#         return checkpoint["epoch"]
+#     else:
+#         raise ValueError("=> No checkpoint found at {}.".format(path))
+
 def load_checkpoint(net, opt=None, path="./checkpoint.pth"):
     """
-    Load previous pre-trained checkpoint.
+    Load previous pre-trained checkpoint, handling nn.DataParallel compatibility.
     :param net:  Network instance.
     :param opt:  Optimizer instance.
     :param path: Path of checkpoint file.
@@ -87,13 +111,22 @@ def load_checkpoint(net, opt=None, path="./checkpoint.pth"):
     """
     if osp.isfile(path):
         print("=> Loading checkpoint {}...".format(path))
-        checkpoint = torch.load(path)
-        # tag
-        # checkpoint = torch.load(path, weights_only=False)
+        checkpoint = torch.load(path, map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
 
-        net.load_state_dict(checkpoint["model"])
+        # Handle state_dict for nn.DataParallel compatibility
+        state_dict = checkpoint["model"]
+        model_dict = net.state_dict()
 
+        # Remove 'module.' prefix if loading to non-DataParallel model
+        if not isinstance(net, nn.DataParallel):
+            state_dict = {k.replace("module.", ""): v for k, v in state_dict.items()}
+        # Add 'module.' prefix if loading to DataParallel model
+        elif isinstance(net, nn.DataParallel) and not any(k.startswith("module.") for k in state_dict.keys()):
+            state_dict = {f"module.{k}": v for k, v in state_dict.items()}
 
+        # Load state_dict into the model
+        model_dict.update(state_dict)
+        net.load_state_dict(model_dict)
 
         if opt is not None:
             opt.load_state_dict(checkpoint["opt"])
