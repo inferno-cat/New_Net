@@ -107,36 +107,46 @@ import torch.nn as nn
 
 def load_checkpoint(net, opt=None, path="./checkpoint.pth"):
     """
-    Load previous pre-trained checkpoint, handling nn.DataParallel compatibility.
-    :param net:  Network instance.
-    :param opt:  Optimizer instance.
-    :param path: Path of checkpoint file.
-    :return:     Checkpoint epoch number.
+    加载预训练检查点，兼容 nn.DataParallel。
+    :param net:  网络实例
+    :param opt:  优化器实例（可选）
+    :param path: 检查点文件路径
+    :return:     检查点的轮次号
     """
     if osp.isfile(path):
-        print("=> Loading checkpoint {}...".format(path))
+        print(f"=> 加载检查点 {path}...")
+        # 加载检查点到当前设备（GPU 或 CPU）
         checkpoint = torch.load(path, map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
 
-        # Handle state_dict for nn.DataParallel compatibility
+        # 获取模型参数
         state_dict = checkpoint["model"]
         model_dict = net.state_dict()
 
-        # Remove 'module.' prefix if loading to non-DataParallel model
-        if not isinstance(net, nn.DataParallel):
-            state_dict = {k.replace("module.", ""): v for k, v in state_dict.items()}
-        # Add 'module.' prefix if loading to DataParallel model
-        elif isinstance(net, nn.DataParallel) and not any(k.startswith("module.") for k in state_dict.keys()):
-            state_dict = {f"module.{k}": v for k, v in state_dict.items()}
+        # 处理 nn.DataParallel 的键名兼容性
+        new_state_dict = {}
+        for k, v in state_dict.items():
+            # 如果模型是 DataParallel，但键没有 'module.'，添加前缀
+            if isinstance(net, nn.DataParallel) and not k.startswith("module."):
+                k = f"module.{k}"
+            # 如果模型不是 DataParallel，但键有 'module.'，移除前缀
+            elif not isinstance(net, nn.DataParallel) and k.startswith("module."):
+                k = k.replace("module.", "")
+            new_state_dict[k] = v
 
-        # Load state_dict into the model
-        model_dict.update(state_dict)
-        net.load_state_dict(model_dict)
+        # 加载调整后的参数
+        try:
+            model_dict.update(new_state_dict)
+            net.load_state_dict(model_dict, strict=True)
+        except RuntimeError as e:
+            print(f"加载参数出错: {e}")
+            print("尝试使用 strict=False 加载...")
+            net.load_state_dict(new_state_dict, strict=False)
 
         if opt is not None:
             opt.load_state_dict(checkpoint["opt"])
         return checkpoint["epoch"]
     else:
-        raise ValueError("=> No checkpoint found at {}.".format(path))
+        raise ValueError(f"=> 在 {path} 未找到检查点。")
 
 
 
