@@ -59,7 +59,7 @@ def get_parser():
     parser.add_argument("--sampler_num", default=20000, type=int, metavar="N", help="sampler num")
     parser.add_argument("--epochs", default=40, type=int, metavar="N", help="number of total epochs to run")
     parser.add_argument(
-        "--lr", "--learning_rate", default=1e-5, type=float, metavar="LR", help="initial learning rate", dest="lr"
+        "--lr", "--learning_rate", default=1e-4, type=float, metavar="LR", help="initial learning rate", dest="lr"
     )
     parser.add_argument(
         "--lr_stepsize", default=5, type=int, metavar="N", help="decay lr by a factor every lr_stepsize epochs"
