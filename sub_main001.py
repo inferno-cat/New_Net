@@ -4,8 +4,8 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 import os
 
-AT_CUDA = 0
-if AT_CUDA != -1:
+AT_CUDA = 7
+if AT_CUDA != 0:
     os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
     from sub_GPU_check import check_gpu_memory
     import torch, sys
@@ -13,8 +13,6 @@ if AT_CUDA != -1:
     if not check_gpu_memory(gpu_id=int(AT_CUDA), max_usage_ratio=0.1):
         print(f"Exiting program due to GPU {AT_CUDA} being in use Or not exist.")
         sys.exit(1)
-else:
-    AT_CUDA = 0
 os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
 import torch
 
@@ -44,7 +42,7 @@ from sub_utils import load_checkpoint, save_checkpoint, send_email, get_model_pa
 from torch.utils.data import DataLoader
 
 # from Sub_Tools.ET_pdc_network import PDCNet
-from sub_net990_92_93_94_97 import PDCNet
+from sub_net001 import PDCNet
 from sub_utils import get_logger
 
 
