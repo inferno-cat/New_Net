@@ -76,4 +76,5 @@ python sub_main001.py \
 --train_batch_size 48 \
 --sampler_num 20000 \
 --store_folder ./output/001 \
---epochs 25
+--epochs 25 \
+--num_workers 8
