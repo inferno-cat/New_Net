@@ -162,7 +162,7 @@ def main():
 
     # tag
     if args.resume:
-        min_epoch = load_checkpoint(model, path=args.resume)
+        min_epoch = load_checkpoint(model, path=args.resume) + 1
     else:
         min_epoch = 0
 
