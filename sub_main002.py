@@ -14,7 +14,7 @@ import os
 #         print(f"Exiting program due to GPU {AT_CUDA} being in use Or not exist.")
 #         sys.exit(1)
 # os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
-os.environ['CUDA_VISIBLE_DEVICES'] = "5,6,7,8"
+os.environ['CUDA_VISIBLE_DEVICES'] = "4,5,6,7"
 import torch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
