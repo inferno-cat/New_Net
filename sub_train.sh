@@ -71,10 +71,19 @@
 #--store_folder ./output/990 \
 #--epochs 25
 
+#python sub_main001.py \
+#--dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
+#--train_batch_size 48 \
+#--sampler_num 20000 \
+#--store_folder ./output/001 \
+#--epochs 25 \
+#--num_workers 8
+
 python sub_main001.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
---train_batch_size 48 \
+--train_batch_size 32 \
 --sampler_num 20000 \
 --store_folder ./output/001 \
 --epochs 25 \
---num_workers 8
+--num_workers 8 \
+--resume /home/share3/zc/file/New_Net/output/001/checkpoints/epoch-11-ckpt.pt
