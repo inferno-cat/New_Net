@@ -88,10 +88,10 @@
 #--num_workers 8 \
 #--resume /home/share3/zc/file/New_Net/output/001/checkpoints/epoch-13-ckpt.pt
 
-python sub_main002.py \
+python sub_main001.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
---train_batch_size 32 \
+--train_batch_size 64 \
 --sampler_num 20000 \
---store_folder ./output/002_crop320 \
+--store_folder ./output/001_crop320 \
 --epochs 25 \
 --num_workers 12
