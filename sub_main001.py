@@ -231,7 +231,7 @@ def main():
             #     device=device,
             #     multi_scale=args.ms,
             # )
-            if epoch+1 >= 15 or epoch+1 == 10 or epoch +1 == 5:
+            if epoch+1 >= 20 or (epoch+1) %5 == 0:
                 test_bsds(
                     test_loader,
                     model,

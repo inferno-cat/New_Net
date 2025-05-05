@@ -367,15 +367,15 @@ class PDCNet(nn.Module):
 
         self.de3 = nn.Sequential(
             Decoder(self.in_channels[2]),
-            # MultiScaleFCAttention(self.in_channels[2]),
+            MultiScaleFCAttention(self.in_channels[2]),
         )
         self.de2 = nn.Sequential(
             Decoder(self.in_channels[1]),
-            # MultiScaleFCAttention(self.in_channels[1]),
+            MultiScaleFCAttention(self.in_channels[1]),
         )
         self.de1 = nn.Sequential(
             Decoder(self.in_channels[0]),
-            # MultiScaleFCAttention(self.in_channels[0]),
+            MultiScaleFCAttention(self.in_channels[0]),
         )
 
         # self.up4 = UpBlock(self.in_channels[3], self.in_channels[2])
@@ -413,16 +413,35 @@ class PDCNet(nn.Module):
         conv3 = self.stage3(self.down3(conv2))  # 4C
         conv4 = self.stage4(self.down4(conv3))  # 4C
 
+        # mscm4 = self.mscm4(conv4)
+        # mscm4_up = self.up4(mscm4)  # 4C
+        # mscm3 = self.mscm3(conv3)
+        # de3 = self.de3(mscm3 + mscm4_up)
+        # de3_up = self.up3(de3)  # 2C
+        # mscm2 = self.mscm2(conv2)
+        # de2 = self.de2(mscm2 + de3_up)
+        # de2_up = self.up2(de2)  # C
+        # mscm1 = self.mscm1(conv1)
+        # de1 = self.de1(mscm1 + de2_up)
+
         mscm4 = self.mscm4(conv4)
         mscm4_up = self.up4(mscm4)  # 4C
         mscm3 = self.mscm3(conv3)
-        de3 = self.de3(mscm3 + mscm4_up)
+
+        de3 = mscm3 + mscm4_up
+        de3 = self.de3(de3) + de3
         de3_up = self.up3(de3)  # 2C
         mscm2 = self.mscm2(conv2)
-        de2 = self.de2(mscm2 + de3_up)
+
+        de2 = mscm2 + de3_up
+        de2 = self.de2(de2) + de2
         de2_up = self.up2(de2)  # C
         mscm1 = self.mscm1(conv1)
-        de1 = self.de1(mscm1 + de2_up)
+
+        de1 = mscm1 + de2_up
+        de1 = self.de1(de1) + de1
+
+
 
         output = self.output_layer(torch.cat([de1, convnext], dim=1))
 
