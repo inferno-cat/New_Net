@@ -4,18 +4,19 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 import os
 
-AT_CUDA = 6
-if AT_CUDA != 0:
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
-    from sub_GPU_check import check_gpu_memory
-    import torch, sys
-
-    if not check_gpu_memory(gpu_id=int(AT_CUDA), max_usage_ratio=0.1):
-        print(f"Exiting program due to GPU {AT_CUDA} being in use Or not exist.")
-        sys.exit(1)
-os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
+# AT_CUDA = 6
+# if AT_CUDA != 0:
+#     os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
+#     from sub_GPU_check import check_gpu_memory
+#     import torch, sys
+#
+#     if not check_gpu_memory(gpu_id=int(AT_CUDA), max_usage_ratio=0.1):
+#         print(f"Exiting program due to GPU {AT_CUDA} being in use Or not exist.")
+#         sys.exit(1)
+# os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
+# import torch
+os.environ['CUDA_VISIBLE_DEVICES'] = "4,5,6,7"
 import torch
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Selected device: {device}")
 os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
@@ -161,7 +162,7 @@ def main():
 
     # tag
     if args.resume:
-        min_epoch = load_checkpoint(model, path=args.resume)
+        min_epoch = load_checkpoint(model, path=args.resume) + 1
     else:
         min_epoch = 0
 

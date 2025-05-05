@@ -223,14 +223,23 @@ def main():
                 loss=loss,
             )
 
-            test_bsds(
-                test_loader,
-                model,
-                save_dir=os.path.join(store_dir, "epoch-{}-test".format(epoch + 1)),
-                logger=logger,
-                device=device,
-                multi_scale=args.ms,
-            )
+            # test_bsds(
+            #     test_loader,
+            #     model,
+            #     save_dir=os.path.join(store_dir, "epoch-{}-test".format(epoch + 1)),
+            #     logger=logger,
+            #     device=device,
+            #     multi_scale=args.ms,
+            # )
+            if epoch >= 15 or epoch == 10:
+                test_bsds(
+                    test_loader,
+                    model,
+                    save_dir=os.path.join(store_dir, "epoch-{}-test".format(epoch + 1)),
+                    logger=logger,
+                    device=device,
+                    multi_scale=args.ms,
+                )
 
             lr_scheduler.step()
 

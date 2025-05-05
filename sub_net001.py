@@ -291,18 +291,18 @@ class Decoder(nn.Module):
     def __init__(self, in_channels):
         super(Decoder, self).__init__()
 
-        # self.conv0 = BaseConv(in_channels, in_channels, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-        self.conv0 = FastConvList(in_channels=in_channels, size=2,)
+        self.conv0 = BaseConv(in_channels, in_channels, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
+        # self.conv0 = FastConvList(in_channels=in_channels, size=2,)
 
         self.conv1 = BaseConv(in_channels, in_channels // 2, 1, 1, activation=nn.ReLU(inplace=True), use_bn=True)
 
-        # self.conv2 = BaseConv(in_channels // 2, in_channels // 2, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
-        self.conv2 = FastConvList(in_channels=in_channels // 2, size=2,)
+        self.conv2 = BaseConv(in_channels // 2, in_channels // 2, 3, 1, activation=nn.ReLU(inplace=True), use_bn=True)
+        # self.conv2 = FastConvList(in_channels=in_channels // 2, size=2,)
 
         self.conv3 = BaseConv(in_channels // 2, in_channels, 1, 1, activation=None, use_bn=True)
 
-        # self.conv4 = BaseConv(in_channels, in_channels, 3, 1, use_bn=True)
-        self.conv4 = FastConvList(in_channels=in_channels, size=2,)
+        self.conv4 = BaseConv(in_channels, in_channels, 3, 1, use_bn=True)
+        # self.conv4 = FastConvList(in_channels=in_channels, size=2,)
     def forward(self, x):
         residual = x
 
