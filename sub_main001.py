@@ -57,13 +57,13 @@ def get_parser():
     parser.add_argument("--train_batch_size", default=4, type=int, metavar="N", help="training batch size")
     parser.add_argument("--test_batch_size", default=1, type=int, metavar="N", help="testing batch size")
     parser.add_argument("--num_workers", default=1, type=int, metavar="N", help="number of workers")
-    parser.add_argument("--sampler_num", default=20000, type=int, metavar="N", help="sampler num")
+    parser.add_argument("--sampler_num", default=30000, type=int, metavar="N", help="sampler num")
     parser.add_argument("--epochs", default=40, type=int, metavar="N", help="number of total epochs to run")
     parser.add_argument(
-        "--lr", "--learning_rate", default=8e-4, type=float, metavar="LR", help="initial learning rate", dest="lr"
+        "--lr", "--learning_rate", default=1e-4, type=float, metavar="LR", help="initial learning rate", dest="lr"
     )
     parser.add_argument(
-        "--lr_stepsize", default=5, type=int, metavar="N", help="decay lr by a factor every lr_stepsize epochs"
+        "--lr_stepsize", default=6, type=int, metavar="N", help="decay lr by a factor every lr_stepsize epochs"
     )
     parser.add_argument("--lr_gamma", default=0.1, type=float, metavar="F", help="learning rate decay factor (gamma)")
     parser.add_argument("--momentum", default=0.9, type=float, metavar="F", help="momentum")
@@ -231,7 +231,7 @@ def main():
             #     device=device,
             #     multi_scale=args.ms,
             # )
-            if epoch >= 15 or epoch == 10:
+            if epoch+1 >= 15 or epoch+1 == 10 or epoch +1 == 5:
                 test_bsds(
                     test_loader,
                     model,
