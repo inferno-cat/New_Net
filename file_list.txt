@@ -57,3 +57,12 @@ MFM和DFF两种融合模块的验证 96 分别在16和15号租的显卡上跑着
 5- 93的修改后decoder
 6- 97的before decoder
 
+data:
+baseline:0.770 0.786
+baseline+MSPA:0.777 0.793
+baseline+MSPA(重新测的):0.771 0.789
+baseline+MSPA+New_upsample:0.776 0.791
+baseline+MSPA+New_decoder:0.775 0.791
+baseline+MSPA+attn_before_decoder:0.772 0.789
+
+

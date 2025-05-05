@@ -104,11 +104,29 @@
 #--epochs 35 \
 #--num_workers 12
 
+#python sub_main001.py \
+#--dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
+#--train_batch_size 64 \
+#--sampler_num 30000 \
+#--store_folder ./output/001_crop320_MSPA_up_before_loss2 \
+#--epochs 35 \
+#--num_workers 12 \
+#--loss_method AW
+
 python sub_main001.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
 --train_batch_size 64 \
 --sampler_num 30000 \
---store_folder ./output/001_crop320_MSPA_up_before_loss2 \
+--store_folder ./output/001_crop320_MSPA_up_before_res \
 --epochs 35 \
 --num_workers 12 \
---loss_method AW
+--loss_method HFL
+
+python sub_main001.py \
+--dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
+--train_batch_size 64 \
+--sampler_num 30000 \
+--store_folder ./output/001_crop320_MSPA_up_before_res_loss \
+--epochs 35 \
+--num_workers 12 \
+--loss_method HFL

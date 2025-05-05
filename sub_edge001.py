@@ -225,10 +225,11 @@ class MixBlock(nn.Module):
         self.attn_block = ET_attn(inplanes=in_channels // 4, scale=4)
         self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=3, stride=1, padding=1, bias=False)
     def forward(self, x):
+        residual = x
         cpdc = self.cpdc_block(x)
         attn = self.attn_block(x)
         o = torch.cat([cpdc, attn], dim=1)
-        o = self.mixconv(o)
+        o = self.mixconv(o) + residual
         return o
 
 class EdgeConv(nn.Module):
