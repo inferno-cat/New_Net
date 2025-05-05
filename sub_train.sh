@@ -107,7 +107,7 @@
 python sub_main001.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
 --train_batch_size 64 \
---sampler_num 20000 \
+--sampler_num 30000 \
 --store_folder ./output/001_crop320_MSPA_up_before_loss \
 --epochs 35 \
 --num_workers 12 \
