@@ -80,7 +80,9 @@ class BsdsDataset(Dataset):
         trans = transforms.Compose(
             [
                 # transforms.RandomCrop((321, 481)),
-                # transforms.RandomCrop((320, 320)),
+                transforms.RandomCrop((320, 320)),
+                # transforms.RandomCrop((160, 160)),
+                # transforms.RandomCrop((256, 256)),
                 # transforms.RandomCrop((192, 192)),
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
