@@ -129,4 +129,4 @@ python sub_main001.py \
 --store_folder ./output/001_crop320_MSPA_up_before_res_loss \
 --epochs 35 \
 --num_workers 12 \
---loss_method HFL
+--loss_method AW
