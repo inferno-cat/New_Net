@@ -134,7 +134,7 @@
 python sub_main_mix01.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
 --train_batch_size 128 \
---sampler_num 60000 \
+--sampler_num 20000 \
 --store_folder ./output/PDDP_crop320 \
 --epochs 35 \
 --num_workers 12 \
