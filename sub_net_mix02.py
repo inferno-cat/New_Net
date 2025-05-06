@@ -90,31 +90,65 @@ class ET_UHNet(nn.Module):
 
         self.conv1x1 = BaseConv1x1(self.in_channels, M, bn=True, relu=True)
         self.PDDPList1 = nn.Sequential(
-            ET_PDDPBlock(M, M // 2, M),
-            ET_PDDPBlock(M, M // 2, M),
-            ET_PDDPBlock(M, M // 2, M),
-            ET_PDDPBlock(M, M // 2, M),
+            # ET_PDDPBlock(M, M // 2, M),
+            # ET_PDDPBlock(M, M // 2, M),
+            # ET_PDDPBlock(M, M // 2, M),
+            # ET_PDDPBlock(M, M // 2, M),
+            ET_PDDPBlock(M, M * 2 , M),
+            ET_PDDPBlock(M, M * 2 , M),
+            ET_PDDPBlock(M, M * 2 , M),
+            ET_PDDPBlock(M, M * 2 , M),
 
         )
         self.poolblock1 = PoolBlock(M, M * 2, kernel_size=2, stride=2)
         self.PDDPList2 = nn.Sequential(
-            ET_PDDPBlock(M * 2, M, M * 2),
-            ET_PDDPBlock(M * 2, M, M * 2),
-            ET_PDDPBlock(M * 2, M, M * 2),
-            ET_PDDPBlock(M * 2, M, M * 2),
+            # ET_PDDPBlock(M * 2, M, M * 2),
+            # ET_PDDPBlock(M * 2, M, M * 2),
+            # ET_PDDPBlock(M * 2, M, M * 2),
+            # ET_PDDPBlock(M * 2, M, M * 2),
+            ET_PDDPBlock(M * 2, M * 4 , M * 2),
+            ET_PDDPBlock(M * 2, M * 4 , M * 2),
+            ET_PDDPBlock(M * 2, M * 4 , M * 2),
+            ET_PDDPBlock(M * 2, M * 4 , M * 2),
         )
         self.poolblock2 = PoolBlock(M * 2, M * 4, kernel_size=2, stride=2)
         self.PDDPList3 = nn.Sequential(
-            ET_PDDPBlock(M * 4, M * 2, M * 4),
-            ET_PDDPBlock(M * 4, M * 2, M * 4),
-            ET_PDDPBlock(M * 4, M * 2, M * 4),
-            ET_PDDPBlock(M * 4, M * 2, M * 4),
+            # ET_PDDPBlock(M * 4, M * 2, M * 4),
+            # ET_PDDPBlock(M * 4, M * 2, M * 4),
+            # ET_PDDPBlock(M * 4, M * 2, M * 4),
+            # ET_PDDPBlock(M * 4, M * 2, M * 4),
+            ET_PDDPBlock(M * 4, M * 8 , M * 4),
+            ET_PDDPBlock(M * 4, M * 8 , M * 4),
+            ET_PDDPBlock(M * 4, M * 8 , M * 4),
+            ET_PDDPBlock(M * 4, M * 8 , M * 4),
         )
 
-        self.fblock1 = FBlock(M * 4, M * 2, M * 2)
-        self.fblock2 = FBlock(M * 2, M, M)
+        # self.fblock1 = FBlock(M * 4, M * 2, M * 2)
+        # self.fblock2 = FBlock(M * 2, M, M)
+        # # self.fblock3 = FBlock(M, M // 2, 1, upsample=False)
+        # self.fblock3 = FBlock(M, M // 2, M, upsample=False)
+        #
+        # self.e1 = CPDCBlock(M)
+        # self.e2 = CPDCBlock(M * 2)
+        # self.e3 = CPDCBlock(M * 4)
+        #
+        # self.d1 = CPDCBlock(M * 2)
+        # self.d2 = CPDCBlock(M )
+        #
+        # self.fb_cpdc_3 = FBlock(M * 4, M * 2, M * 2)
+        # self.fb_cpdc_2 = FBlock(M * 6, M, M)
+        # self.fb_cpdc_1 = FBlock(M * 3, M // 2, M, upsample=False)
+        #
+        # # fuselayer将fblock3与fb_cpdc_3的输出进行融合，从两个M通道的特征图获取单通道输出的特征图，先用1*1将通道数减半变为M，然后用3*3卷积将通道数变为1
+        # self.fuselayer = nn.Sequential(
+        #     nn.Conv2d(M * 2, M, kernel_size=1, stride=1, padding=0, bias=False),
+        #     nn.Conv2d(M, 1, kernel_size=3, stride=1, padding=1, bias=False),
+        # )
+
+        self.fblock1 = FBlock(M * 4, M * 8, M * 2)
+        self.fblock2 = FBlock(M * 2, M *4 , M)
         # self.fblock3 = FBlock(M, M // 2, 1, upsample=False)
-        self.fblock3 = FBlock(M, M // 2, M, upsample=False)
+        self.fblock3 = FBlock(M, M*2, M, upsample=False)
 
         self.e1 = CPDCBlock(M)
         self.e2 = CPDCBlock(M * 2)
@@ -123,16 +157,15 @@ class ET_UHNet(nn.Module):
         self.d1 = CPDCBlock(M * 2)
         self.d2 = CPDCBlock(M )
 
-        self.fb_cpdc_3 = FBlock(M * 4, M * 2, M * 2)
-        self.fb_cpdc_2 = FBlock(M * 6, M, M)
-        self.fb_cpdc_1 = FBlock(M * 3, M // 2, M, upsample=False)
+        self.fb_cpdc_3 = FBlock(M * 4, M * 8, M * 2)
+        self.fb_cpdc_2 = FBlock(M * 6, M * 12, M)
+        self.fb_cpdc_1 = FBlock(M * 3, M *6 , M, upsample=False)
 
         # fuselayer将fblock3与fb_cpdc_3的输出进行融合，从两个M通道的特征图获取单通道输出的特征图，先用1*1将通道数减半变为M，然后用3*3卷积将通道数变为1
         self.fuselayer = nn.Sequential(
             nn.Conv2d(M * 2, M, kernel_size=1, stride=1, padding=0, bias=False),
             nn.Conv2d(M, 1, kernel_size=3, stride=1, padding=1, bias=False),
         )
-
 
 
     def forward(self, x):
