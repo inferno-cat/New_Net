@@ -131,11 +131,23 @@
 #--num_workers 12 \
 #--loss_method AW
 
-python sub_main_mix01.py \
+#python sub_main_mix01.py \
+#--dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
+#--train_batch_size 128 \
+#--sampler_num 20000 \
+#--store_folder ./output/PDDP_crop320 \
+#--epochs 35 \
+#--num_workers 12 \
+#--loss_method HFL \
+#--print_freq 250 \
+#--lr_stepsize 10 \
+#--learning_rate 8e-4
+
+python sub_main_mix02.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
 --train_batch_size 128 \
 --sampler_num 20000 \
---store_folder ./output/PDDP_crop320 \
+--store_folder ./output/PDDP_crop320_mod1 \
 --epochs 35 \
 --num_workers 12 \
 --loss_method HFL \
