@@ -158,7 +158,9 @@ def convert_model_to_standard_conv(model):
 
 
 def save_cpdc(model, path):
-    convert_model_to_standard_conv(model)
+    # 检查模型又没有这个方法，如果模型有 convert_to_standard_conv 方法，则转换模型
+    if hasattr(model, "convert_to_standard_conv"):
+        convert_model_to_standard_conv(model)
     if isinstance(model, torch.nn.DataParallel):
         torch.save(model.module.state_dict(), path)
     else:
