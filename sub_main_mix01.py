@@ -138,7 +138,7 @@ def main():
     # 2.定义网络
     # model = PDCNet(16).to(device)
 
-    model = UHNet(M=16).to(device)
+    model = UHNet(M=32).to(device)
 
     # model = MyModel().to(device)
     model = nn.DataParallel(model)
