@@ -80,7 +80,7 @@ class BsdsDataset(Dataset):
         trans = transforms.Compose(
             [
                 # transforms.RandomCrop((321, 481)),
-                transforms.RandomCrop((320, 320)),
+                # transforms.RandomCrop((320, 320)),
                 # transforms.RandomCrop((160, 160)),
                 # transforms.RandomCrop((256, 256)),
                 # transforms.RandomCrop((192, 192)),

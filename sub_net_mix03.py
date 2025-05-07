@@ -365,16 +365,56 @@ class UpBlock(nn.Module):
         x1 = self.up1(x)
         x2 = self.up2(x)
         return x1 + x2
+
+class GaborPreProcess(nn.Module):
+    def __init__(self):
+        super().__init__()
+        # 预先计算多个方向和频率的Gabor核
+        self.kernels = self._create_gabor_kernels()
+
+    def _create_gabor_kernels(self):
+        gabor_bank = []
+        # 定义不同的方向和频率
+        thetas = torch.tensor([0, np.pi/4, np.pi/2], dtype=torch.float32)  # 显式转换为张量
+        lambdas = torch.tensor([4, 8], dtype=torch.float32)                 # 显式转换为张量
+
+        for theta in thetas:
+            for lambd in lambdas:
+                # 创建单个Gabor核
+                sigma = 2.0
+                gamma = 0.5
+                x, y = torch.meshgrid(torch.arange(-3, 4), torch.arange(-3, 4))
+                x_theta = x * torch.cos(theta) + y * torch.sin(theta)
+                y_theta = -x * torch.sin(theta) + y * torch.cos(theta)
+                gb = torch.exp(-0.5 * (x_theta**2 + gamma**2 * y_theta**2) / sigma**2) * torch.cos(2 * np.pi * x_theta / lambd)
+                gabor_bank.append(gb.unsqueeze(0).unsqueeze(0))
+
+        return torch.cat(gabor_bank, dim=0)
+
+    def forward(self, x):
+        # 对输入图像应用Gabor滤波
+        batch_size, channels, height, width = x.size()
+        features = F.conv2d(x.view(-1, 1, height, width), self.kernels.to(x.device), padding=3, groups=1)
+        features = features.view(batch_size, -1, height, width)
+        # 合并原始通道和Gabor特征
+        return torch.cat([x, features[:, :3, :, :]], dim=1)
+
 class PDCNet(nn.Module):
     def __init__(self, base_dim=16):
         super(PDCNet, self).__init__()
-        # self.block = CPDCBlock
-        self.block = MixBlock
+        self.block = CPDCBlock
+        # self.block = MixBlock
+        # self.PreProcess = GaborPreProcess()
         self.in_channels = [base_dim, base_dim * 2, base_dim * 4, base_dim * 4]
         self.stem_conv = nn.Sequential(
             nn.Conv2d(3, self.in_channels[0], 3, 1, 1, bias=False),
             nn.Conv2d(self.in_channels[0], self.in_channels[0], 3, 1, 1, bias=False),
         )
+        # self.stem_conv = nn.Sequential(
+        #     nn.Conv2d(6, self.in_channels[0], 3, 1, 1, bias=False),
+        #     nn.Conv2d(self.in_channels[0], self.in_channels[0], 3, 1, 1, bias=False),
+        # )
+
 
         self.stage1 = self._make_layer(self.block, self.in_channels[0], 4)
         self.stage2 = self._make_layer(self.block, self.in_channels[1], 4)
@@ -457,7 +497,8 @@ class PDCNet(nn.Module):
     def forward(self, x):
         convnext = self.convnext(x)
 
-        conv_stem = self.stem_conv(x)
+        # conv_stem = self.stem_conv(x)
+        conv_stem = self.stem_conv(self.PreProcess(x))
 
         conv1 = self.stage1(conv_stem)  # C
         # conv1 = self.fuse1(torch.cat([conv1, self.rep1(conv1)], dim=1))
