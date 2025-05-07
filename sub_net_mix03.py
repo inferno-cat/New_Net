@@ -25,6 +25,7 @@ from Sub_Tools.XT_Fastconv import FastConvList
 from Sub_Tools.AT_FCA import MultiScaleFCAttention
 from Sub_Tools.AT_RepVitBlock import GlobalAttentionRepViTBlock as AT_RepVitBlock
 from Sub_Tools.ET_DFC import DFCAttention
+from Sub_Tools.AT_UpSample2 import DySampleFusion_WithOut as AT_UpSample2
 
 import torch
 import torch.nn as nn
@@ -455,15 +456,15 @@ class PDCNet(nn.Module):
 
         self.de3 = nn.Sequential(
             Decoder(self.in_channels[2]),
-            MultiScaleFCAttention(self.in_channels[2]),
+            # MultiScaleFCAttention(self.in_channels[2]),
         )
         self.de2 = nn.Sequential(
             Decoder(self.in_channels[1]),
-            MultiScaleFCAttention(self.in_channels[1]),
+            # MultiScaleFCAttention(self.in_channels[1]),
         )
         self.de1 = nn.Sequential(
             Decoder(self.in_channels[0]),
-            MultiScaleFCAttention(self.in_channels[0]),
+            # MultiScaleFCAttention(self.in_channels[0]),
         )
 
         # self.up4 = UpBlock(self.in_channels[3], self.in_channels[2])
@@ -472,9 +473,12 @@ class PDCNet(nn.Module):
         # self.up4 = AT_UpSample(self.in_channels[3], self.in_channels[2])
         # self.up3 = AT_UpSample(self.in_channels[2], self.in_channels[1])
         # self.up2 = AT_UpSample(self.in_channels[1], self.in_channels[0])
-        self.up4 = UpSample(self.in_channels[3], self.in_channels[2])
-        self.up3 = UpSample(self.in_channels[2], self.in_channels[1])
-        self.up2 = UpSample(self.in_channels[1], self.in_channels[0])
+        # self.up4 = UpSample(self.in_channels[3], self.in_channels[2])
+        # self.up3 = UpSample(self.in_channels[2], self.in_channels[1])
+        # self.up2 = UpSample(self.in_channels[1], self.in_channels[0])
+        self.up4 = AT_UpSample2(self.in_channels[3], self.in_channels[2])
+        self.up3 = AT_UpSample2(self.in_channels[2], self.in_channels[1])
+        self.up2 = AT_UpSample2(self.in_channels[1], self.in_channels[0])
 
         self.convnext = nn.Sequential(
             BaseConv(3, self.in_channels[0], 3, 1, activation=nn.ReLU(inplace=True), use_bn=True),
