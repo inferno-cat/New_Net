@@ -192,6 +192,26 @@ class Squeeze_and_Excitation_Module(nn.Module):
         y = self.fc(y).view(b, c, 1, 1)
         return x * y.expand_as(x)
 
+class MultiScaleSE(nn.Module):
+    def __init__(self, channels, reduction=16):
+        super(MultiScaleSE, self).__init__()
+        self.global_pool = nn.AdaptiveAvgPool2d(1)
+        self.local_pool = nn.AdaptiveAvgPool2d(2)
+        self.fc1 = nn.Conv2d(channels, channels // reduction, kernel_size=1)
+        self.fc2 = nn.Conv2d(channels // reduction, channels, kernel_size=1)
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        # 全局和局部池化
+        global_se = self.global_pool(x)
+        local_se = self.local_pool(x)
+        # 上采样局部池化结果并叠加
+        se = global_se + nn.functional.interpolate(local_se, size=global_se.shape[-2:])
+        se = self.fc1(se)
+        se = nn.ReLU()(se)
+        se = self.sigmoid(self.fc2(se))
+        return x * se
+
 class MultiScaleContextModule(nn.Module):
     def __init__(self, dim):
         super(MultiScaleContextModule, self).__init__()
@@ -220,7 +240,10 @@ class MultiScaleContextModule(nn.Module):
             nn.ReLU(inplace=True),
         )
         self.conv1x1 = nn.Conv2d(dim, dim, 1, 1, 0)
-        self.attn = Squeeze_and_Excitation_Module(dim)
+        # self.attn = Squeeze_and_Excitation_Module(dim)
+        self.attn = MultiScaleSE(dim)
+
+
     def forward(self, x):
         residual = x
 
