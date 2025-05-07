@@ -88,6 +88,11 @@ class MixNet(nn.Module):
         self.skip2 = SkipFusionBlock(self.in_channels[1] * 2, self.in_channels[1])
         self.skip1 = SkipFusionBlock(self.in_channels[0] * 2, self.in_channels[0])
 
+        self.output_layer = nn.Sequential(
+            nn.Conv2d(self.in_channels[0], self.in_channels[0], 3, 1, 1),
+            nn.Conv2d(self.in_channels[0], 1, 3, 1, 1),
+        )
+
 
         #
         # self.stage1 = self._make_layer(self.block, self.in_channels[0], 4)
@@ -160,7 +165,7 @@ class MixNet(nn.Module):
         d1 = self.ord1(self.CMU1(d2))
         d1 = self.ord1(d1)
 
-        o = torch.sigmoid(d1)
+        o = self.output_layer(d1)
         return o
 
     # def convert_to_standard_conv(self):
