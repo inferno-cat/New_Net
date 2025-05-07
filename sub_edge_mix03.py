@@ -252,7 +252,7 @@ class MixBlock(nn.Module):
         # self.attn_block = MultiScaleConvBlock(in_channels, in_channels, kernel_size=3,)
         self.attn_block = DFCAttention(in_channels, in_channels, reduction=16)
         self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=3, stride=1, padding=1, bias=False)
-        self.mixconv1x1 = nn.Conv2d(in_channels * 2, in_channels, kernel_size=1, stride=1, padding=0, bias=False)
+        self.mixconv1x1 = nn.Conv2d(in_channels, in_channels, kernel_size=1, stride=1, padding=0, bias=False)
         # self.attention = nn.Sequential(
         #     nn.Conv2d(in_channels * 2 , in_channels, kernel_size=1, stride=1, padding=0, bias=False),
         #     nn.Sigmoid()
