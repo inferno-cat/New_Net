@@ -367,15 +367,15 @@ class PDCNet(nn.Module):
 
         self.de3 = nn.Sequential(
             Decoder(self.in_channels[2]),
-            # MultiScaleFCAttention(self.in_channels[2]),
+            MultiScaleFCAttention(self.in_channels[2]),
         )
         self.de2 = nn.Sequential(
             Decoder(self.in_channels[1]),
-            # MultiScaleFCAttention(self.in_channels[1]),
+            MultiScaleFCAttention(self.in_channels[1]),
         )
         self.de1 = nn.Sequential(
             Decoder(self.in_channels[0]),
-            # MultiScaleFCAttention(self.in_channels[0]),
+            MultiScaleFCAttention(self.in_channels[0]),
         )
 
         # self.up4 = UpBlock(self.in_channels[3], self.in_channels[2])
