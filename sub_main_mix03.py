@@ -45,7 +45,7 @@ from torch.utils.data import DataLoader
 
 # from Sub_Tools.ET_pdc_network import PDCNet
 # from sub_net001 import PDCNet
-from sub_net_mix03 import MixNet
+from sub_net_mix03 import PDCNet
 from sub_utils import get_logger
 
 
@@ -136,10 +136,10 @@ def main():
     )
 
     # 2.定义网络
-    # model = PDCNet(16).to(device)
+    model = PDCNet(16).to(device)
 
     # model = UHNet(M=32).to(device)
-    model = MixNet(16).to(device)
+    # model = MixNet(16).to(device)
 
     # model = MyModel().to(device)
     model = nn.DataParallel(model)
