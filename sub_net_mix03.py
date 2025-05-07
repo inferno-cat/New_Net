@@ -497,8 +497,8 @@ class PDCNet(nn.Module):
     def forward(self, x):
         convnext = self.convnext(x)
 
-        # conv_stem = self.stem_conv(x)
-        conv_stem = self.stem_conv(self.PreProcess(x))
+        conv_stem = self.stem_conv(x)
+        # conv_stem = self.stem_conv(self.PreProcess(x))
 
         conv1 = self.stage1(conv_stem)  # C
         # conv1 = self.fuse1(torch.cat([conv1, self.rep1(conv1)], dim=1))
