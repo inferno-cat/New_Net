@@ -23,6 +23,7 @@ from Sub_Tools.AT_SSA import SAABlocklist as AT_SSA
 from Sub_Tools.ET_PDDPBlock import PDDPBlock
 from Sub_Tools.XT_Fastconv import FastConvList
 from Sub_Tools.AT_FCA import MultiScaleFCAttention
+from Sub_Tools.AT_RepVitBlock import MultiScaleSERepViTBlock as AT_RepVitBlock
 
 import torch
 import torch.nn as nn
@@ -356,6 +357,10 @@ class PDCNet(nn.Module):
         self.stage3 = self._make_layer(self.block, self.in_channels[2], 4)
         self.stage4 = self._make_layer(self.block, self.in_channels[3], 4)
 
+        self.rep1 = AT_RepVitBlock(self.in_channels[0], self.in_channels[0], kernel_size=3, stride=1)
+        self.rep2 = AT_RepVitBlock(self.in_channels[1], self.in_channels[1], kernel_size=3, stride=1)
+        self.rep3 = AT_RepVitBlock(self.in_channels[2], self.in_channels[2], kernel_size=3, stride=1)
+
         self.down2 = DownSample(self.in_channels[0], self.in_channels[1])
         self.down3 = DownSample(self.in_channels[1], self.in_channels[2])
         self.down4 = DownSample(self.in_channels[2], self.in_channels[3])
@@ -412,9 +417,13 @@ class PDCNet(nn.Module):
         conv_stem = self.stem_conv(x)
 
         conv1 = self.stage1(conv_stem)  # C
+        conv1 = self.rep1(conv1) + conv1
         conv2 = self.stage2(self.down2(conv1))  # 2C
+        conv2 = self.rep2(conv2) + conv2
         conv3 = self.stage3(self.down3(conv2))  # 4C
+        conv3 = self.rep3(conv3) + conv3
         conv4 = self.stage4(self.down4(conv3))  # 4C
+
 
         # mscm4 = self.mscm4(conv4)
         # mscm4_up = self.up4(mscm4)  # 4C

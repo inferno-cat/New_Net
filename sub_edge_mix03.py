@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 # from Sub_Tools.ET_PDDPBlock import PDDPBlock
-from Sub_Tools.AT_CBAM import EAT_CBAM, CBAM
+# from Sub_Tools.AT_CBAM import EAT_CBAM, CBAM
 # from Sub_Tools.AT_BIFormer_dcart import BiLevelRoutingAttention_nchw as ET_attn
 from Sub_Tools.AT_MSPA import MSPAModule as ET_attn
 from Sub_Tools.AT_RepVitBlock import MultiScaleSERepViTBlock as AT_Rep
@@ -185,7 +185,7 @@ class CPDCBlock(nn.Module):
             nn.ReLU(True),
         )
         self.conv1x1 = nn.Conv2d(in_channels, in_channels, 1, 1, 0)
-        self.attn = CBAM(in_channels, reduction_ratio=16,)
+        # self.attn = CBAM(in_channels, reduction_ratio=16,)
         self._init_weights()
     def _init_weights(self):
         for m in self.modules():
@@ -206,7 +206,7 @@ class CPDCBlock(nn.Module):
         x = torch.cat([x_d, x_v, x_h, x_c], dim=1)
         x = self.conv3x3(x)
 
-        x = self.attn(x) + x
+        # x = self.attn(x) + x
 
         x = self.conv1x1(x)
 
