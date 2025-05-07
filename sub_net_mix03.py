@@ -90,7 +90,10 @@ class MixNet(nn.Module):
 
         self.output_layer = nn.Sequential(
             nn.Conv2d(self.in_channels[0], self.in_channels[0], 3, 1, 1),
+            nn.BatchNorm2d(self.in_channels[0]),
+            nn.ReLU(inplace=True),
             nn.Conv2d(self.in_channels[0], 1, 3, 1, 1),
+            nn.ReLU(inplace=True),
         )
 
 
