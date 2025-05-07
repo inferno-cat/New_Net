@@ -206,7 +206,7 @@ class CPDCBlock(nn.Module):
         # self.conv_rep = AT_Rep(in_channels, in_channels, kernel_size=3, stride=1)
         self.conv1x1 = nn.Conv2d(in_channels, in_channels, 1, 1, 0)
         # self.attn = CBAM(in_channels, reduction_ratio=16,)
-        self.attn = MultiScaleSE(in_channels)
+        # self.attn = MultiScaleSE(in_channels)
         self._init_weights()
     def _init_weights(self):
         for m in self.modules():
@@ -230,7 +230,7 @@ class CPDCBlock(nn.Module):
         # x = self.attn(x) + x
 
         x = self.conv1x1(x)
-        x = self.attn(x) + x
+        # x = self.attn(x) + x
 
         x = x + residual
 
