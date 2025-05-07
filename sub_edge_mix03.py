@@ -7,7 +7,8 @@ import torch.nn.functional as F
 # from Sub_Tools.AT_CBAM import EAT_CBAM, CBAM
 # from Sub_Tools.AT_BIFormer_dcart import BiLevelRoutingAttention_nchw as ET_attn
 from Sub_Tools.AT_MSPA import MSPAModule as ET_attn
-from Sub_Tools.AT_RepVitBlock import GlobalAttentionRepViTBlock as AT_Rep
+# from Sub_Tools.AT_RepVitBlock import GlobalAttentionRepViTBlock as AT_Rep
+from Sub_Tools.AT_CMUNeXTBlock import MultiScaleConvBlock
 
 class Conv2d(nn.Module):
     def __init__(
@@ -246,9 +247,10 @@ class MixBlock(nn.Module):
         super(MixBlock, self).__init__()
         self.cpdc_block = CPDCBlock(in_channels)
         # self.attn_block = ET_attn(inplanes=in_channels // 4, scale=4)
-        self.attn_block = AT_Rep(in_channels, in_channels, kernel_size=3, stride=1)
-        # self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=3, stride=1, padding=1, bias=False)
-        self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=1, stride=1, padding=0, bias=False)
+        # self.attn_block = AT_Rep(in_channels, in_channels, kernel_size=3, stride=1)
+        self.attn_block = MultiScaleConvBlock(in_channels, in_channels, kernel_size=3,)
+        self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=3, stride=1, padding=1, bias=False)
+        # self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=1, stride=1, padding=0, bias=False)
     def forward(self, x):
         residual = x
         cpdc = self.cpdc_block(x)
