@@ -171,7 +171,7 @@ python sub_main_mix03.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
 --train_batch_size 16 \
 --sampler_num 40000 \
---store_folder ./output/PDCNet_Mix_DFC_combine \
+--store_folder ./output/PDCNet_Mix_base \
 --epochs 35 \
 --num_workers 12 \
 --loss_method HFL \
