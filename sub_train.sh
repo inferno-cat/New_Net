@@ -152,5 +152,5 @@ python sub_main_mix03.py \
 --num_workers 12 \
 --loss_method HFL \
 --print_freq 100 \
---lr_stepsize 3 \
+--lr_stepsize 5 \
 --learning_rate 5e-4
