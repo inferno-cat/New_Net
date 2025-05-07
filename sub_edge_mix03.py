@@ -179,11 +179,12 @@ class CPDCBlock(nn.Module):
             nn.BatchNorm2d(in_channels // 4),
             nn.ReLU(True),
         )
-        self.conv3x3 = nn.Sequential(
-            nn.Conv2d(in_channels, in_channels, kernel_size=3, stride=1, padding=1, bias=False),
-            nn.BatchNorm2d(in_channels),
-            nn.ReLU(True),
-        )
+        # self.conv3x3 = nn.Sequential(
+        #     nn.Conv2d(in_channels, in_channels, kernel_size=3, stride=1, padding=1, bias=False),
+        #     nn.BatchNorm2d(in_channels),
+        #     nn.ReLU(True),
+        # )
+        self.conv_rep = AT_Rep(in_channels, in_channels, kernel_size=3, stride=1)
         self.conv1x1 = nn.Conv2d(in_channels, in_channels, 1, 1, 0)
         # self.attn = CBAM(in_channels, reduction_ratio=16,)
         self._init_weights()
@@ -204,8 +205,8 @@ class CPDCBlock(nn.Module):
         x_c = self.conv_c(x)
 
         x = torch.cat([x_d, x_v, x_h, x_c], dim=1)
-        x = self.conv3x3(x)
-
+        # x = self.conv3x3(x)
+        x = self.conv_rep(x)
         # x = self.attn(x) + x
 
         x = self.conv1x1(x)
