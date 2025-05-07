@@ -3,8 +3,8 @@ import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
 
-from Sub_Net.Sub_Tools.ET_PDDPBlock import FBlock
-from Sub_Tools.ET_NewNet import PoolBlock
+# from Sub_Tools.ET_PDDPBlock import FBlock
+# from Sub_Tools.ET_NewNet import PoolBlock
 # from edge import Conv2d, EdgeConv, CPDCBlock, PlainBlock
 # from sub_edge import Conv2d, EdgeConv, CPDCBlock
 from sub_edge_mix04 import Conv2d, EdgeConv, CPDCBlock, MixBlock
@@ -21,7 +21,7 @@ from Sub_Tools.AT_SESA import SEWithAdvancedSpatialAttention as AT_SESA
 from Sub_Tools.AT_LWGA import DynamicLWGA_Block as AT_LWGA
 from Sub_Tools.AT_SMFA import SMFADynamicDownscale as AT_SMFA
 from Sub_Tools.AT_SSA import SAABlocklist as AT_SSA
-from Sub_Tools.ET_PDDPBlock import PDDPBlock, PoolBlock
+# from Sub_Tools.ET_PDDPBlock import PDDPBlock, PoolBlock
 from Sub_Tools.XT_Fastconv import FastConvList
 from Sub_Tools.AT_FCA import MultiScaleFCAttention
 from Sub_Tools.AT_RepVitBlock import GlobalAttentionRepViTBlock as AT_RepVitBlock
