@@ -24,6 +24,7 @@ from Sub_Tools.ET_PDDPBlock import PDDPBlock
 from Sub_Tools.XT_Fastconv import FastConvList
 from Sub_Tools.AT_FCA import MultiScaleFCAttention
 from Sub_Tools.AT_RepVitBlock import GlobalAttentionRepViTBlock as AT_RepVitBlock
+from Sub_Tools.ET_DFC import DFCAttention
 
 import torch
 import torch.nn as nn
@@ -367,8 +368,8 @@ class UpBlock(nn.Module):
 class PDCNet(nn.Module):
     def __init__(self, base_dim=16):
         super(PDCNet, self).__init__()
-        self.block = CPDCBlock
-        # self.block = MixBlock
+        # self.block = CPDCBlock
+        self.block = MixBlock
         self.in_channels = [base_dim, base_dim * 2, base_dim * 4, base_dim * 4]
         self.stem_conv = nn.Sequential(
             nn.Conv2d(3, self.in_channels[0], 3, 1, 1, bias=False),

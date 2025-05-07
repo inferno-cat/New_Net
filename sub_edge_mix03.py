@@ -9,6 +9,7 @@ import torch.nn.functional as F
 from Sub_Tools.AT_MSPA import MSPAModule as ET_attn
 # from Sub_Tools.AT_RepVitBlock import GlobalAttentionRepViTBlock as AT_Rep
 from Sub_Tools.AT_CMUNeXTBlock import MultiScaleConvBlock
+from Sub_Tools.ET_DFC import DFCAttention
 
 class Conv2d(nn.Module):
     def __init__(
@@ -248,17 +249,29 @@ class MixBlock(nn.Module):
         self.cpdc_block = CPDCBlock(in_channels)
         # self.attn_block = ET_attn(inplanes=in_channels // 4, scale=4)
         # self.attn_block = AT_Rep(in_channels, in_channels, kernel_size=3, stride=1)
-        self.attn_block = MultiScaleConvBlock(in_channels, in_channels, kernel_size=3,)
-        self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=3, stride=1, padding=1, bias=False)
+        # self.attn_block = MultiScaleConvBlock(in_channels, in_channels, kernel_size=3,)
+        self.attn_block = DFCAttention(in_channels, in_channels, reduction=16)
+        # self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=3, stride=1, padding=1, bias=False)
         # self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=1, stride=1, padding=0, bias=False)
+        self.attention = nn.Sequential(
+            nn.Conv2d(in_channels * 2 , in_channels, kernel_size=1, stride=1, padding=0, bias=False),
+            nn.Sigmoid()
+        )
     def forward(self, x):
         residual = x
         cpdc = self.cpdc_block(x)
         attn = self.attn_block(x)
 
         o = torch.cat([cpdc, attn], dim=1)
-        o = self.mixconv(o) + residual
-        return o
+        # o = self.mixconv(o) + residual
+
+        attention_weights = self.attention(o)
+        fused_o = cpdc * attention_weights + attn * (1 - attention_weights)
+
+        return fused_o + residual
+
+
+        # return o
 
 class EdgeConv(nn.Module):
     def __init__(self, in_channels, out_channels, groups=1, bias=False):
