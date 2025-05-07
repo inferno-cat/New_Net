@@ -251,24 +251,27 @@ class MixBlock(nn.Module):
         # self.attn_block = AT_Rep(in_channels, in_channels, kernel_size=3, stride=1)
         # self.attn_block = MultiScaleConvBlock(in_channels, in_channels, kernel_size=3,)
         self.attn_block = DFCAttention(in_channels, in_channels, reduction=16)
-        # self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=3, stride=1, padding=1, bias=False)
-        # self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=1, stride=1, padding=0, bias=False)
-        self.attention = nn.Sequential(
-            nn.Conv2d(in_channels * 2 , in_channels, kernel_size=1, stride=1, padding=0, bias=False),
-            nn.Sigmoid()
-        )
+        self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=3, stride=1, padding=1, bias=False)
+        self.mixconv1x1 = nn.Conv2d(in_channels * 2, in_channels, kernel_size=1, stride=1, padding=0, bias=False)
+        # self.attention = nn.Sequential(
+        #     nn.Conv2d(in_channels * 2 , in_channels, kernel_size=1, stride=1, padding=0, bias=False),
+        #     nn.Sigmoid()
+        # )
     def forward(self, x):
         residual = x
         cpdc = self.cpdc_block(x)
         attn = self.attn_block(x)
 
         o = torch.cat([cpdc, attn], dim=1)
+        o = self.mixconv(o)
+        o = self.mixconv1x1(o)
+        return o
         # o = self.mixconv(o) + residual
 
-        attention_weights = self.attention(o)
-        fused_o = cpdc * attention_weights + attn * (1 - attention_weights)
-
-        return fused_o + residual
+        # attention_weights = self.attention(o)
+        # fused_o = cpdc * attention_weights + attn * (1 - attention_weights)
+        #
+        # return fused_o + residual
 
 
         # return o
