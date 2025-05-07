@@ -143,11 +143,11 @@
 #--lr_stepsize 10 \
 #--learning_rate 8e-4
 
-python sub_main_mix02.py \
+python sub_main_mix03.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
 --train_batch_size 32 \
 --sampler_num 20000 \
---store_folder ./output/PDDP_crop320_mod1 \
+--store_folder ./output/PDDP_crop320_mod2 \
 --epochs 35 \
 --num_workers 12 \
 --loss_method HFL \
