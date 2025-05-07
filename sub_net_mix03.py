@@ -23,7 +23,7 @@ from Sub_Tools.AT_SSA import SAABlocklist as AT_SSA
 from Sub_Tools.ET_PDDPBlock import PDDPBlock
 from Sub_Tools.XT_Fastconv import FastConvList
 from Sub_Tools.AT_FCA import MultiScaleFCAttention
-from Sub_Tools.AT_RepVitBlock import MultiScaleSERepViTBlock as AT_RepVitBlock
+from Sub_Tools.AT_RepVitBlock import GlobalAttentionRepViTBlock as AT_RepVitBlock
 
 import torch
 import torch.nn as nn
