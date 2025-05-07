@@ -175,7 +175,7 @@ python sub_main_mix03.py \
 --epochs 35 \
 --num_workers 12 \
 --loss_method HFL \
---print_freq 100 \
+--print_freq 500 \
 --lr_stepsize 5 \
 --learning_rate 1e-4
 
