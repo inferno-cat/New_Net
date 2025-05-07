@@ -394,11 +394,11 @@ class PDCNet(nn.Module):
             nn.ReLU(inplace=True),
         )
         self.fuse3 = nn.Sequential(
-            nn.Conv2d(self.in_channels[2] * 2, self.in_channels[1], 3, 1, 1),
+            nn.Conv2d(self.in_channels[2] * 2, self.in_channels[2], 3, 1, 1),
             nn.ReLU(inplace=True),
         )
         self.fuse4 = nn.Sequential(
-            nn.Conv2d(self.in_channels[3] * 2, self.in_channels[1], 3, 1, 1),
+            nn.Conv2d(self.in_channels[3] * 2, self.in_channels[3], 3, 1, 1),
             nn.ReLU(inplace=True),
         )
 
