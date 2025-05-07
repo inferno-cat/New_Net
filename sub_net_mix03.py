@@ -240,8 +240,8 @@ class MultiScaleContextModule(nn.Module):
             nn.ReLU(inplace=True),
         )
         self.conv1x1 = nn.Conv2d(dim, dim, 1, 1, 0)
-        # self.attn = Squeeze_and_Excitation_Module(dim)
-        self.attn = MultiScaleSE(dim)
+        self.attn = Squeeze_and_Excitation_Module(dim)
+        # self.attn = MultiScaleSE(dim)
 
 
     def forward(self, x):
