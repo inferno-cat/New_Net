@@ -459,13 +459,13 @@ class PDCNet(nn.Module):
         conv_stem = self.stem_conv(x)
 
         conv1 = self.stage1(conv_stem)  # C
-        conv1 = self.fuse1(torch.cat([conv1, convnext], dim=1))
+        conv1 = self.fuse1(torch.cat([conv1, self.rep1(conv1)], dim=1))
         conv2 = self.stage2(self.down2(conv1))  # 2C
-        conv2 = self.fuse2(torch.cat([conv2, convnext], dim=1))
+        conv2 = self.fuse2(torch.cat([conv2, self.rep2(conv2)], dim=1))
         conv3 = self.stage3(self.down3(conv2))  # 4C
-        conv3 = self.fuse3(torch.cat([conv3, convnext], dim=1))
+        conv3 = self.fuse3(torch.cat([conv3, self.rep3(conv3)], dim=1))
         conv4 = self.stage4(self.down4(conv3))  # 4C
-        conv4 = self.fuse4(torch.cat([conv4, convnext], dim=1))
+        conv4 = self.fuse4(torch.cat([conv4, self.rep4(conv4)], dim=1))
 
         # mscm4 = self.mscm4(conv4)
         # mscm4_up = self.up4(mscm4)  # 4C
