@@ -147,10 +147,10 @@ python sub_main_mix03.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
 --train_batch_size 64 \
 --sampler_num 20000 \
---store_folder ./output/PDCNet_base_Dice \
+--store_folder ./output/PDCNet_Mix_globalRep \
 --epochs 35 \
 --num_workers 12 \
---loss_method Dice \
+--loss_method HFL \
 --print_freq 100 \
 --lr_stepsize 3 \
 --learning_rate 5e-4

@@ -7,7 +7,7 @@ import torch.nn.functional as F
 # from Sub_Tools.AT_CBAM import EAT_CBAM, CBAM
 # from Sub_Tools.AT_BIFormer_dcart import BiLevelRoutingAttention_nchw as ET_attn
 from Sub_Tools.AT_MSPA import MSPAModule as ET_attn
-from Sub_Tools.AT_RepVitBlock import MultiScaleSERepViTBlock as AT_Rep
+from Sub_Tools.AT_RepVitBlock import GlobalAttentionRepViTBlock as AT_Rep
 
 class Conv2d(nn.Module):
     def __init__(

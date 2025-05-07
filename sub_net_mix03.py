@@ -367,8 +367,8 @@ class UpBlock(nn.Module):
 class PDCNet(nn.Module):
     def __init__(self, base_dim=16):
         super(PDCNet, self).__init__()
-        self.block = CPDCBlock
-        # self.block = MixBlock
+        # self.block = CPDCBlock
+        self.block = MixBlock
         self.in_channels = [base_dim, base_dim * 2, base_dim * 4, base_dim * 4]
         self.stem_conv = nn.Sequential(
             nn.Conv2d(3, self.in_channels[0], 3, 1, 1, bias=False),
