@@ -27,6 +27,7 @@ from Sub_Tools.AT_FCA import MultiScaleFCAttention
 from Sub_Tools.AT_RepVitBlock import GlobalAttentionRepViTBlock as AT_RepVitBlock
 from Sub_Tools.ET_DFC import DFCAttention
 from Sub_Tools.AT_UpSample2 import DySampleFusion_WithOut
+from Sub_Tools.ET_PDDPBlock import PDDPBlock, PoolBlock, FBlock
 
 import torch
 import torch.nn as nn
