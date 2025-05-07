@@ -169,7 +169,7 @@ class MixNet(nn.Module):
         d1 = self.ord1(d1)
 
         o = self.output_layer(d1)
-        return o
+        return torch.sigmoid(o)
 
     # def convert_to_standard_conv(self):
     #     for module in self.modules():
