@@ -247,7 +247,8 @@ class MixBlock(nn.Module):
         self.cpdc_block = CPDCBlock(in_channels)
         # self.attn_block = ET_attn(inplanes=in_channels // 4, scale=4)
         self.attn_block = AT_Rep(in_channels, in_channels, kernel_size=3, stride=1)
-        self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=3, stride=1, padding=1, bias=False)
+        # self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=3, stride=1, padding=1, bias=False)
+        self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=1, stride=1, padding=0, bias=False)
     def forward(self, x):
         residual = x
         cpdc = self.cpdc_block(x)
