@@ -4,14 +4,6 @@ import torch.nn.functional as F
 import warnings
 warnings.filterwarnings('ignore')
 
-"""
-CV缝合救星创新魔改：引入融合模块以增强特征表达能力
-创新背景：虽然DySample的两种上采样风格（'lp' 和 'pl'）在局部细节增强和全局上下文融合上分别具有显著优势，但在某些复杂任务中，
-既需要局部细节的保留，也需要全局信息的融合。因此，可以设计一种融合模块来同时利用这两种风格的优势。
-设计思路：新增一个融合模块，输入特征经过'lp'和'pl'两种风格的上采样后，分别得到两个上采样结果，然后通过逐点卷积（Pointwise Convolution）
-进行融合，形成最终的输出。这种方式不仅保留了局部细节特征，还能通过'pl'风格带来的全局信息交互进一步提升特征表达能力。
-"""
-
 def normal_init(module, mean=0, std=1, bias=0):
     if hasattr(module, 'weight') and module.weight is not None:
         nn.init.normal_(module.weight, mean, std)

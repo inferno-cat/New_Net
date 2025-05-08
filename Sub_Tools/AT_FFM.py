@@ -1,33 +1,7 @@
 import torch
 import torch.nn as nn
 
-# 动态特征融合（DFF）模块 - 创新 2D 版本
-# B站：CV缝合救星原创出品
-"""
-AMSA - FFM（Adaptive Multi - Scale Attention Feature Fusion Module，自适应多尺度注意力特征融合模块）
-一. 创新点
-1. 多尺度平均池化：除了原本的自适应平均池化*B站CV缝合救星*，引入多尺度的平均池化操作，以捕获不同尺度下的全局信息，
-使模型能更好地适应不同
-大小的特征模式。
-2. 门控机制：在计算注意力权重时，加入门控机制*B站CV缝合救星*，通过额外的卷积层和 Sigmoid 函数来控制信息的流动，
-增强模型对重要特征的关注能力。
-3. 残差分支的融合：在通道减少后的特征图上添加一个残差分支，将原始输入特征进行一定的变换后与通道减少后的特征图相加，
-有助于缓解梯度消失问题，保留更多原始特征信息*B站CV缝合救星*。
 
-二. 代码解释
-1. __init__ 方法：
-A. 定义了三个不同尺度的自适应平均池化层 self.avg_pool1、self.avg_pool2 和 self.avg_pool3，用于捕获不同尺度的全局信息。
-B. 为每个平均池化层对应的输出设置了独立的注意力卷积层 self.conv_atten1、self.conv_atten2 和 self.conv_atten3。
-C. 引入了门控机制 self.gate_conv，通过一个 1x1 卷积层和 Sigmoid 函数来控制信息的流动。
-D. 定义了通道减少卷积层 self.conv_redu 和残差分支的卷积层 self.residual_conv。
-2. forward 方法：
-A. *B站CV缝合救星*首先将输入特征 x 和 skip 沿着通道维度拼接。
-B. 对拼接后的特征进行多尺度平均池化，并计算每个尺度下的注意力权重，然后将它们相加融合。
-C. 通过门控机制对融合后的注意力权重进行调整。
-D. 将调整后的注意力权重应用到拼接后的特征上*B站CV缝合救星*。
-E. 进行通道减少操作，并通过残差分支将原始输入特征的变换结果与通道减少后的特征图相加。
-F. 最后计算另一个注意力权重并应用到最终的特征图上。
-"""
 class InnovativeDFF(nn.Module):
     def __init__(self, dim):
         super().__init__()

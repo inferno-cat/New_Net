@@ -1,14 +1,5 @@
 import torch
 from torch import nn
-"""
-CV缝合救星魔改： GEMA（Global Enhanced Multi-scale Attention），全局增强多尺度注意力模块。
-不足(research gap)：EMA 模块当前主要依赖于不同尺度的卷积（1×1 和 3×3）和全局平均池化来提取多尺度的特征。可以在设计中增加一个
-自适应的全局上下文模块，用于捕获特征图中不同位置的长距离依赖关系，以便让模型能够更好地理解全局语义信息。
-
-CV缝合救星魔改：
-在 EMA 模块中加入一个自适应的全局上下文分支，利用1×1 卷积来对全局特征进行压缩。然后，采用扩展卷积（Dilated Convolution）
-替代 3×3 卷积分支，进一步增强对局部和全局信息的提取能力。这样可以在不显著增加计算量的前提下，捕获更丰富的空间上下文信息。
-"""
 
 class EnhancedEMA(nn.Module):
     def __init__(self, channels, factor=8, dilation_rate=2):

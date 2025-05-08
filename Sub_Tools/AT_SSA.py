@@ -3,22 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 from timm.models.layers import trunc_normal_, DropPath, to_2tuple
-"""
-CV缝合救星魔改创新：Sparse Local Attention (SLF)
-引入局部卷积增强（Local Convolution Enhancement）
-一、背景：
-这个创新点的目标是通过一个局部卷积层（LocalConv）来增强自注意力机制对局部信息的捕捉能力。
-1. 引入局部卷积层：该卷积层能够通过卷积操作捕捉图像的局部信息，这对图像的细节处理有帮助，
-尤其是在图像篡改等任务中。
-2. 结合稀疏自注意力：将局部卷积和稀疏自注意力相结合，增强对局部信息的处理，同时减少计算开销。
-二、说明：
-1. 局部卷积增强（LocalConv）：通过卷积操作增强输入张量的局部信息，帮助捕捉细节特征。卷积层
-采用 3x3 卷积核，带有 BatchNorm 和 ReLU 激活。
-2. SSA模块改进：引入了局部卷积层 LocalConv，并在自注意力计算后将其结果与局部卷积结果融合。
-这种融合增强了模型对局部信息的关注，同时保持了稀疏自注意力的计算效率。
-3. 多尺度处理：稀疏自注意力与局部卷积的结合，能够捕捉不同层次的特征，改进了模型的表达能力，尤
-其适用于图像处理任务。
-"""
 
 # 局部卷积增强模块
 class LocalConv(nn.Module):

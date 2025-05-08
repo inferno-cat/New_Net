@@ -1,13 +1,6 @@
 import torch
 import torch.nn as nn
 from typing import List
-"""
-CV缝合救星模块：CAT-FuseBlock
-CAT表示Channel Attention Transformer，Fuse表示高频和低频特征的融合。
-通道注意力机制：通道注意力机制能够为每个通道分配一个可学习的权重，从而动态地调整高频和低频信息在不同通道上的重要性，这样
-能够在不影响空间维度的情况下增强模型的表达能力。在高频和低频分支的融合过程中，引入通道注意力机制，让模型可以学习不同通道
-的重要性，从而自动调整高频和低频特征在每个通道上的贡献。
-"""
 
 class SwishImplementation(torch.autograd.Function):
     @staticmethod

@@ -3,7 +3,7 @@ import torch.nn as nn
 from einops import rearrange
 import torch.nn.functional as F
 
-# 哔哩哔哩：CV缝合救星
+
 
 class LayerNorm(nn.Module):
     def __init__(self, normalized_shape, eps=1e-6, data_format="channels_first"):

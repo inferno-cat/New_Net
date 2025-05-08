@@ -1,15 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-"""
-缺点2：下采样尺度固定
-在现有的实现中，EASA分支的下采样尺度是固定的（self.down_scale = 8）。然而，对于不同分辨率的图像，固定的下
-采样尺度可能会导致非局部特征捕获不足或过度平滑的现象。
 
-CV缝合救星改进思路:
-使用动态的下采样尺度，根据输入图像的分辨率或复杂度来调整下采样的程度。可以通过计算图像复杂度（例如图像的均方差）
-来调整 down_scale，使其在高复杂度图像上使用较低的下采样比率，以保留更多信息。
-"""
 class DMlp(nn.Module):
     def __init__(self, dim, growth_rate=2.0):
         super().__init__()

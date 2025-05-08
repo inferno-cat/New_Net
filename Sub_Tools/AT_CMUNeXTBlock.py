@@ -1,18 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-"""
-局限性：虽然大卷积核能够一定程度上提取全局信息，但在高度复杂的医学图像中，
-依赖大卷积核可能仍不足以捕捉更深层次的全局特征。例如，对于形态多样或位置随机的病灶，
-卷积操作可能无法完全捕获长距离的依赖关系。
-
-思路：设计一个动态卷积核模块，根据输入图像的特征自适应调整卷积核大小，从而增强对不同尺度病灶的适应性。
-这种方法可以解决不同病灶尺度不一致的问题。
-
-实现：将CMUNeXt模块中的大卷积核替换为一个多尺度卷积核模块，根据不同的特征层生成不同大小的卷积核，
-在特征提取过程中动态生成3x3、5x5、7x7等卷积核进行融合，确保网络在不同尺度下都有较强的特征提取能力。
-"""
-
 
 # class MultiScaleConvBlock(nn.Module):
 #     def __init__(self, in_channels, out_channels, kernel_sizes=[3, 5, 7], reduction=4):
