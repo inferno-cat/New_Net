@@ -185,7 +185,7 @@ python sub_main_mix04.py \
 --sampler_num 20000 \
 --store_folder ./output/PDDP_batch2 \
 --epochs 35 \
-#--num_workers 12 \
+--num_workers 12 \
 --loss_method HFL \
 --print_freq 500 \
 --lr_stepsize 5 \
