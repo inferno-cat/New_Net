@@ -179,17 +179,17 @@
 #--lr_stepsize 5 \
 #--learning_rate 1e-3
 
-#python sub_main_mix04.py \
-#--dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
-#--train_batch_size 1 \
-#--sampler_num 20000 \
-#--store_folder ./output/PDDP_batch1 \
-#--epochs 35 \
-#--num_workers 12 \
-#--loss_method HFL \
-#--print_freq 500 \
-#--lr_stepsize 5 \
-#--learning_rate 1e-3
+python sub_main_mix04.py \
+--dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
+--train_batch_size 2 \
+--sampler_num 20000 \
+--store_folder ./output/PDDP_batch1 \
+--epochs 35 \
+--num_workers 12 \
+--loss_method HFL \
+--print_freq 500 \
+--lr_stepsize 5 \
+--learning_rate 1e-3
 
 #python sub_main_mix03.py \
 #--dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
@@ -203,14 +203,14 @@
 #--lr_stepsize 5 \
 #--learning_rate 1e-3
 
-python sub_main_mix03.py \
---dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
---train_batch_size 1 \
---sampler_num 20000 \
---store_folder ./output/PDCNet_Mix_up \
---epochs 35 \
---num_workers 12 \
---loss_method HFL \
---print_freq 500 \
---lr_stepsize 5 \
---learning_rate 1e-3
+#python sub_main_mix03.py \
+#--dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
+#--train_batch_size 1 \
+#--sampler_num 20000 \
+#--store_folder ./output/PDCNet_Mix_up \
+#--epochs 35 \
+#--num_workers 12 \
+#--loss_method HFL \
+#--print_freq 500 \
+#--lr_stepsize 5 \
+#--learning_rate 1e-3
