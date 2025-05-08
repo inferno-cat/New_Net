@@ -220,7 +220,7 @@ python sub_main_base.py \
 --train_batch_size 8 \
 --sampler_num 30000 \
 --store_folder ./output/base \
---epochs 25 \
+--epochs 35 \
 --num_workers 12 \
 --loss_method HFL \
 --print_freq 500 \
