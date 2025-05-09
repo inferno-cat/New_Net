@@ -322,10 +322,9 @@ class FuseDecoder(nn.Module):
         self.decoder = Decoder(in_channels)
         self.attn = AT_GEMA(in_channels,)
     def forward(self, x):
-        residual = x
-        x1 = self.decoder(x)
-        x2 = self.attn(x1) + residual
-        return x2
+        x1 = self.decoder(x) + x
+        x2 = self.attn(x1) + x1
+        return x2 + x
 
 class PDCNet(nn.Module):
     def __init__(self, base_dim=16):
