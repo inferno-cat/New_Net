@@ -7,7 +7,7 @@ from Sub_Tools.ET_NewNet import PoolBlock
 # from edge import Conv2d, EdgeConv, CPDCBlock, PlainBlock
 # from sub_edge import Conv2d, EdgeConv, CPDCBlock
 # from sub_edge91_MSPA_Lightfuse import Conv2d, EdgeConv, CPDCBlock, MixBlock
-from new_edge_01 import Conv2d, EdgeConv, CPDCBlock, MixBlock
+from new_edge_02 import Conv2d, EdgeConv, CPDCBlock, MixBlock
 from timm.models.layers import trunc_normal_, DropPath
 from Sub_Tools.AT_UpSample import DySample_UP_Outchannels as AT_UpSample
 from Sub_Tools.AT_DownSample import WTFDown as AT_DownSample

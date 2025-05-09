@@ -13,7 +13,7 @@ import os
 #         print(f"Exiting program due to GPU {AT_CUDA} being in use Or not exist.")
 #         sys.exit(1)
 # os.environ["CUDA_VISIBLE_DEVICES"] = str(AT_CUDA)
-os.environ['CUDA_VISIBLE_DEVICES'] = "6,7,"
+os.environ['CUDA_VISIBLE_DEVICES'] = "4,5,"
 # os.environ['CUDA_VISIBLE_DEVICES'] = "0"
 import torch
 
@@ -37,7 +37,7 @@ from sub_utils import load_checkpoint, save_checkpoint, send_email, get_model_pa
 from torch.utils.data import DataLoader
 
 # from pdc_attention_network import PDCNet
-from new_net_01 import PDCNet
+from new_net_02 import PDCNet
 from sub_utils import get_logger
 
 # 1.参数定义

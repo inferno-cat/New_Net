@@ -6,8 +6,9 @@ import torch.nn.functional as F
 # from Sub_Tools.ET_PDDPBlock import PDDPBlock
 # from Sub_Tools.AT_CBAM import EAT_CBAM, CBAM
 # from Sub_Tools.AT_BIFormer_dcart import BiLevelRoutingAttention_nchw as ET_attn
-from Sub_Tools.AT_MSPA import MSPAModule as ET_attn
+# from Sub_Tools.AT_MSPA import MSPAModule as ET_attn
 # from Sub_Tools.XT_Dilated_MSPA import MSPAModule as ET_attn
+from Sub_Tools.AT_GEMA import EnhancedEMA as ET_attn
 
 class Conv2d(nn.Module):
     def __init__(
@@ -220,7 +221,8 @@ class MixBlock(nn.Module):
     def __init__(self, in_channels, ):
         super(MixBlock, self).__init__()
         self.cpdc_block = CPDCBlock(in_channels)
-        self.attn_block = ET_attn(inplanes=in_channels // 4, scale=4)
+        # self.attn_block = ET_attn(inplanes=in_channels // 4, scale=4)
+        self.attn_block = ET_attn(in_channels,)
         self.mixconv = nn.Conv2d(in_channels * 2, in_channels, kernel_size=1, stride=1, padding=0, bias=False)
     def forward(self, x):
         cpdc = self.cpdc_block(x)
@@ -267,7 +269,7 @@ if __name__ == "__main__":
     # weights_conv[[5, 7]] = weights[[4]] - theta * weights[[5, 7]]
     # weights_conv[[0, 2, 6, 8]] = 1 - theta
     # print(weights_conv.view(3, 3))
-    conv = CPDCBlock(32)
+    conv = MixBlock(32)
     # conv = ConvFactor(Conv2d, 3, 3, bias=False)
     # print(conv)
     x = torch.randn(4, 32, 480, 320)
