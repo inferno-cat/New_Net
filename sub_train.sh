@@ -227,11 +227,23 @@
 #--lr_stepsize 5 \
 #--learning_rate 1e-4
 
-python new_main_01.py \
+#python new_main_01.py \
+#--dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
+#--train_batch_size 8 \
+#--sampler_num 30000 \
+#--store_folder ./output/new_01_MixBlock \
+#--epochs 35 \
+#--num_workers 12 \
+#--loss_method HFL \
+#--print_freq 500 \
+#--lr_stepsize 5 \
+#--learning_rate 1e-4
+
+python new_main_02.py \
 --dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
 --train_batch_size 8 \
 --sampler_num 30000 \
---store_folder ./output/new_01_MixBlock \
+--store_folder ./output/new_02_GEMA \
 --epochs 35 \
 --num_workers 12 \
 --loss_method HFL \
