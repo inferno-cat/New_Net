@@ -1,7 +1,8 @@
 #!/bin/bash
 # 该脚本用于一键将本地项目上传到 GitHub
 # 设置本地项目路径，请根据实际情况修改
-project_path="D:\rawcode\NewCode\Sub_Net"
+#project_path="D:\rawcode\NewCode\Sub_Net"
+project_path="D:\MOVE\rawcode\NewCode\Sub_Net"
 # 切换到项目路径
 cd $project_path
 # 获取用户输入的提交信息

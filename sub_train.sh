@@ -322,3 +322,5 @@ python new_main_08.py \
 --print_freq 500 \
 --lr_stepsize 5 \
 --learning_rate 1e-4
+
+# test
