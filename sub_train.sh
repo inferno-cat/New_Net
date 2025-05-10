@@ -286,27 +286,27 @@
 #--print_freq 500 \
 #--lr_stepsize 5 \
 #--learning_rate 1e-4
-
-python new_main_06.py \
---dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
---train_batch_size 8 \
---sampler_num 30000 \
---store_folder ./output/new_06_LineBlock_GEMA \
---epochs 35 \
---num_workers 12 \
---loss_method HFL \
---print_freq 500 \
---lr_stepsize 5 \
---learning_rate 1e-4
-
-#python new_main_07.py \
+#
+#python new_main_06.py \
 #--dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
 #--train_batch_size 8 \
 #--sampler_num 30000 \
-#--store_folder ./output/new_07_MSEM_GEMA \
+#--store_folder ./output/new_06_LineBlock_GEMA \
 #--epochs 35 \
 #--num_workers 12 \
 #--loss_method HFL \
 #--print_freq 500 \
 #--lr_stepsize 5 \
 #--learning_rate 1e-4
+
+python new_main_07.py \
+--dataset /home/share/liuchangsong/edge_data/BSDS500_flip_rotate_pad/ \
+--train_batch_size 8 \
+--sampler_num 30000 \
+--store_folder ./output/new_07_MSEM_GEMA \
+--epochs 35 \
+--num_workers 12 \
+--loss_method HFL \
+--print_freq 500 \
+--lr_stepsize 5 \
+--learning_rate 1e-4
